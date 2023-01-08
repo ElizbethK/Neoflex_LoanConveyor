@@ -1,9 +1,9 @@
-package ru.neostudy.loanConveyor.level1.dto.other;
+package ru.neostudy.loanConveyorProject.conveyor.dto.other;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.neostudy.loanConveyor.level1.dto.lvl1.EmploymentDTO;
+import ru.neostudy.loanConveyorProject.conveyor.dto.EmploymentDTO;
 
 import java.time.LocalDate;
 
@@ -15,7 +15,7 @@ public class FinishRegistrationRequestDTO {
     private Enum maritalStatus;
     private Integer dependentAmount;
     private LocalDate passportIssueDate;
-    private String passportIssueBrach;
+    private String passportIssueBranch;
     private EmploymentDTO employment;
     private String account;
 
@@ -26,7 +26,7 @@ public class FinishRegistrationRequestDTO {
         this.maritalStatus = maritalStatus;
         this.dependentAmount = dependentAmount;
         this.passportIssueDate = passportIssueDate;
-        this.passportIssueBrach = passportIssueBrach;
+        this.passportIssueBranch = passportIssueBrach;
         this.employment = employment;
         this.account = account;
     }

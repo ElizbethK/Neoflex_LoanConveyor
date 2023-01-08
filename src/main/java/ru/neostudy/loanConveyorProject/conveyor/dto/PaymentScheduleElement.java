@@ -1,4 +1,4 @@
-package ru.neostudy.loanConveyor.level1.dto.lvl1;
+package ru.neostudy.loanConveyorProject.conveyor.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

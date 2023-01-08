@@ -1,4 +1,4 @@
-package ru.neostudy.loanConveyor;
+package ru.neostudy.loanConveyorProject;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
