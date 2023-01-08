@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+import ru.neostudy.loanConveyorProject.conveyor.dto.CreditDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
+import ru.neostudy.loanConveyorProject.conveyor.dto.ScoringDataDTO;
 import ru.neostudy.loanConveyorProject.conveyor.service.LoanOfferService;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationErrorResponse;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationNotCreatedException;
@@ -19,7 +21,8 @@ import java.util.List;
 @RequestMapping("/conveyor")
 public class ConveyorController {
 
-
+//  POST: /conveyor/offers - расчёт возможных условий кредита.
+//  Request - LoanApplicationRequestDTO, response - List<LoanOfferDTO>
 
     @PostMapping("/offers")
     public List<LoanOfferDTO> getPossibleOffers(@RequestBody @Valid LoanApplicationRequestDTO loanApplicationRequestDTO,
@@ -41,14 +44,29 @@ public class ConveyorController {
         return loanOfferService.createLoanOffers(loanOfferDTO);
     }
 
-   // @PostMapping("/calculation")
-
-    /*
 
 
-    POST: /conveyor/calculation - валидация присланных данных + скоринг данных + полный расчет параметров кредита.
-    Request - ScoringDataDTO, response CreditDTO.
-     */
+//    POST: /conveyor/calculation - валидация присланных данных + скоринг данных + полный расчет параметров кредита.
+//    Request - ScoringDataDTO, response CreditDTO.
+
+/*   @PostMapping("/calculation")
+   public CreditDTO getCalculatedCredit(@RequestBody @Valid ScoringDataDTO scoringDataDTO,
+                                        BindingResult bindingResult){
+       if (bindingResult.hasErrors()){
+           StringBuilder errorMsg = new StringBuilder();
+
+           List<FieldError> errors = bindingResult.getFieldErrors();
+           for(FieldError error : errors ){
+               errorMsg.append(error.getField())
+                       .append(" - ").append(error.getDefaultMessage())
+                       .append(";");
+           }
+           throw new LoanApplicationNotCreatedException(errorMsg.toString());
+       }
+
+   }*/
+
+
 
     @ExceptionHandler
     private ResponseEntity<LoanApplicationErrorResponse> handleException(
@@ -59,6 +77,4 @@ public class ConveyorController {
         );
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
-
-
 }

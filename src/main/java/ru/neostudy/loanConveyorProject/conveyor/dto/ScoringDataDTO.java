@@ -71,7 +71,7 @@ public class ScoringDataDTO {
     @Pattern(regexp = "^[1-9]\\d*$")
     private Integer dependentAmount;
 
-    //?????
+
     private EmploymentDTO employment;
 
     @NotEmpty(message = "should not be empty")
