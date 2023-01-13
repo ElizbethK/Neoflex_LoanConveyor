@@ -1,9 +1,7 @@
 package ru.neostudy.loanConveyorProject.conveyor.dto;
 
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
-import ru.neostudy.loanConveyorProject.conveyor.dto.enums.Gender;
 
 
 import javax.validation.constraints.*;
