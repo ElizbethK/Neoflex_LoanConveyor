@@ -11,7 +11,6 @@ import ru.neostudy.loanConveyorProject.conveyor.dto.enums.EmploymentStatus;
 import ru.neostudy.loanConveyorProject.conveyor.dto.enums.Gender;
 import ru.neostudy.loanConveyorProject.conveyor.dto.enums.MaritalStatus;
 import ru.neostudy.loanConveyorProject.conveyor.dto.enums.Position;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
