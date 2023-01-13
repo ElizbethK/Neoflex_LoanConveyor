@@ -11,6 +11,7 @@ import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.ScoringDataDTO;
 import ru.neostudy.loanConveyorProject.conveyor.service.LoanOfferService;
+import ru.neostudy.loanConveyorProject.conveyor.service.ScoringService;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationErrorResponse;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationNotCreatedException;
 
@@ -39,9 +40,8 @@ public class ConveyorController {
             throw new LoanApplicationNotCreatedException(errorMsg.toString());
         }
 
-        LoanOfferDTO loanOfferDTO = new LoanOfferDTO(loanApplicationRequestDTO);
-        LoanOfferService loanOfferService = new LoanOfferService();
-        return loanOfferService.createLoanOffers(loanOfferDTO);
+        LoanOfferService loanOfferService = new LoanOfferService(loanApplicationRequestDTO);
+        return loanOfferService.createLoanOffers();
     }
 
 
@@ -49,7 +49,7 @@ public class ConveyorController {
 //    POST: /conveyor/calculation - валидация присланных данных + скоринг данных + полный расчет параметров кредита.
 //    Request - ScoringDataDTO, response CreditDTO.
 
-/*   @PostMapping("/calculation")
+   @PostMapping("/calculation")
    public CreditDTO getCalculatedCredit(@RequestBody @Valid ScoringDataDTO scoringDataDTO,
                                         BindingResult bindingResult){
        if (bindingResult.hasErrors()){
@@ -63,8 +63,9 @@ public class ConveyorController {
            }
            throw new LoanApplicationNotCreatedException(errorMsg.toString());
        }
-
-   }*/
+       ScoringService scoringService = new ScoringService(scoringDataDTO);
+       return scoringService.score();
+   }
 
 
 
