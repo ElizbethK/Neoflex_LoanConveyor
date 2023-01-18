@@ -47,7 +47,7 @@ public class ScoringDataDTO {
     @NotEmpty(message = "should not be empty")
     private String passportIssueBranch;
 
-    @NotNull
+
     private Enum maritalStatus;
 
     @NotEmpty(message = "should not be empty")

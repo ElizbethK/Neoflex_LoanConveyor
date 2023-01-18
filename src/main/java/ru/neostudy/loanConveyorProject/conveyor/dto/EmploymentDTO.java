@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @ToString
 @NoArgsConstructor
 public class EmploymentDTO {
-    @NotNull
+
     private Enum employmentStatus;
 
     @NotEmpty(message = "should not be empty")
@@ -27,7 +27,7 @@ public class EmploymentDTO {
     @NotEmpty(message = "should not be empty")
     private BigDecimal salary;
 
-    @NotNull
+
     private Enum position;
 
     @NotNull

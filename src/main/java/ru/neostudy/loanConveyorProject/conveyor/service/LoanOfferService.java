@@ -29,10 +29,10 @@ public class LoanOfferService {
     }
 
     public List<LoanOfferDTO> createLoanOffers(){
-       createOfferDTO(false, false, loanApplicationRequestDTO);
-       createOfferDTO(false, true, loanApplicationRequestDTO);
-       createOfferDTO(true, false, loanApplicationRequestDTO);
-       createOfferDTO(true, true, loanApplicationRequestDTO);
+        createOfferDTO(false, false, loanApplicationRequestDTO);
+        createOfferDTO(false, true, loanApplicationRequestDTO);
+        createOfferDTO(true, false, loanApplicationRequestDTO);
+        createOfferDTO(true, true, loanApplicationRequestDTO);
 
         for (LoanOfferDTO l:this.loanOfferDTOList) {
             System.out.println(l);
@@ -93,5 +93,8 @@ public class LoanOfferService {
         return loanOfferDTOList;
 
     }
+
+
+
 
 }

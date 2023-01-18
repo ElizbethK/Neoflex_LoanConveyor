@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import ru.neostudy.loanConveyorProject.conveyor.dto.CreditDTO;
-import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
-import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
-import ru.neostudy.loanConveyorProject.conveyor.dto.ScoringDataDTO;
+import ru.neostudy.loanConveyorProject.conveyor.dto.*;
 import ru.neostudy.loanConveyorProject.conveyor.service.LoanOfferService;
 import ru.neostudy.loanConveyorProject.conveyor.service.ScoringService;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationErrorResponse;
@@ -51,6 +48,7 @@ public class ConveyorController {
 
    @PostMapping("/calculation")
    public CreditDTO getCalculatedCredit(@RequestBody @Valid ScoringDataDTO scoringDataDTO,
+                                        @RequestBody @Valid  EmploymentDTO employmentDTO,
                                         BindingResult bindingResult){
        if (bindingResult.hasErrors()){
            StringBuilder errorMsg = new StringBuilder();
@@ -63,7 +61,7 @@ public class ConveyorController {
            }
            throw new LoanApplicationNotCreatedException(errorMsg.toString());
        }
-       ScoringService scoringService = new ScoringService(scoringDataDTO);
+       ScoringService scoringService = new ScoringService(scoringDataDTO, employmentDTO);
        return scoringService.score();
    }
 

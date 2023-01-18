@@ -19,16 +19,21 @@ import java.util.List;
 
 
 @Service
-public class ScoringService {
+public class ScoringService{
 
     @Value("${baseRate}")
     BigDecimal baseRate;
 
-    private CreditDTO creditDTO = new CreditDTO();
     private EmploymentStatus employmentStatus;
     private Gender gender;
     private MaritalStatus maritalStatus;
     private Position position;
+    private static BigDecimal scoredRate;
+    private static Boolean decision = true;
+
+
+
+    private CreditDTO creditDTO = new CreditDTO();
 
     @Autowired
     private EmploymentDTO employmentDTO;
@@ -36,82 +41,56 @@ public class ScoringService {
     @Autowired
     private ScoringDataDTO scoringDataDTO;
 
-    public ScoringService(ScoringDataDTO scoringDataDTO) {
+    public ScoringService(ScoringDataDTO scoringDataDTO, EmploymentDTO employmentDTO) {
         this.scoringDataDTO = scoringDataDTO;
+        this.employmentDTO = employmentDTO;
+        this.scoredRate = baseRate;
+
     }
 
+
+    //-----------------------------------------------------------
+
     public CreditDTO score() {
-        BigDecimal scoredRate = baseRate;
         creditDTO.setAmount(scoringDataDTO.getAmount());
         creditDTO.setTerm(scoringDataDTO.getTerm());
 
-        Boolean decision = true;
+
         while (decision = true) {
 
 //Рабочий статус: Безработный → отказ; Самозанятый → ставка увеличивается на 1; Владелец бизнеса → ставка увеличивается на 3
-            String status = String.valueOf(employmentDTO.getEmploymentStatus());
-            switch (status) {
-                case "UNEMPLOYED":
-                    System.out.println("The loan application was refused");
-                    decision = false;
-                    break;
-                case "FREELANCER":
-                    creditDTO.setRate(baseRate.add(BigDecimal.valueOf(1)));
-                    scoredRate = creditDTO.getRate();
-                    break;
-                case "ENTERPRENEUR":
-                    creditDTO.setRate(baseRate.add(BigDecimal.valueOf(3)));
-                    scoredRate = creditDTO.getRate();
-                    break;
-                default:
-                    creditDTO.setRate(baseRate);
-                    scoredRate = creditDTO.getRate();
-                    break;
-            }
+
+            if(String.valueOf(this.employmentDTO.getEmploymentStatus()).equals( "UNEMPLOYED")){
+                System.out.println("The loan application was refused");
+                decision = false;
+            } else
+                scoredRate = determineStatusJob(scoredRate);
+            creditDTO.setRate(scoredRate);
+
+
 
 //Позиция на работе: Менеджер среднего звена → ставка уменьшается на 2; Топ-менеджер → ставка уменьшается на 4
-            String position = String.valueOf(employmentDTO.getPosition());
+            scoredRate = determinePosition(scoredRate);
+            creditDTO.setRate(scoredRate);
 
-            switch (position) {
-                case "MANAGER":
-                    creditDTO.setRate(scoredRate.subtract(BigDecimal.valueOf(3)));
-                    scoredRate = creditDTO.getRate();
-                    break;
-                case "TOPMANAGER":
-                    creditDTO.setRate(scoredRate.subtract(BigDecimal.valueOf(4)));
-                    scoredRate = creditDTO.getRate();
-                    break;
-                default:
-                    scoredRate = creditDTO.getRate();
-                    break;
-            }
+
 
 //Сумма займа больше, чем 20 зарплат → отказ
-            if(scoringDataDTO.getAmount().compareTo((employmentDTO.getSalary()).multiply(BigDecimal.valueOf(20))) > 0){
+            if((scoringDataDTO.getAmount()).compareTo((employmentDTO.getSalary()).multiply(BigDecimal.valueOf(20))) > 0){
                 System.out.println("The loan application was refused");
                 decision = false;
             }
 
 
 //Семейное положение: Замужем/женат → ставка уменьшается на 3; Разведен → ставка увеличивается на 1
-            String marStatus = String.valueOf(scoringDataDTO.getMaritalStatus());
-            switch (marStatus){
-                case "MARRIED":
-                    creditDTO.setRate(scoredRate.subtract(BigDecimal.valueOf(3)));
-                    scoredRate = creditDTO.getRate();
-                    break;
-                case "DIVORCED":
-                    creditDTO.setRate(scoredRate.add(BigDecimal.valueOf(1)));
-                    scoredRate = creditDTO.getRate();
-                    break;
-                default:
-                    scoredRate = creditDTO.getRate();
-                    break;
-            }
+            scoredRate = determineMarStatus(scoredRate);
+            creditDTO.setRate(scoredRate);
+
 
 // Количество иждивенцев больше 1 → ставка увеличивается на 1
             if(scoringDataDTO.getDependentAmount() > 1){
-                creditDTO.setRate(scoredRate.add(BigDecimal.valueOf(1)));
+                scoredRate = scoredRate.add(BigDecimal.valueOf(1));
+                creditDTO.setRate(scoredRate);
             }
 
 
@@ -126,23 +105,8 @@ public class ScoringService {
 //Женщина, возраст от 35 до 60 лет → ставка уменьшается на 3;
 //Мужчина, возраст от 30 до 55 лет → ставка уменьшается на 3;
 //Не бинарный → ставка увеличивается на 3
-            String gender = String.valueOf(scoringDataDTO.getGender());
-            if(gender.equals("MALE")) {
-                if (age > 35 & age < 60) {
-                    creditDTO.setRate(scoredRate.subtract(BigDecimal.valueOf(3)));
-                    scoredRate = creditDTO.getRate();
-                } else continue;
-            }
-            else if (gender.equals("FEMALE")) {
-                    if (age > 30 & age < 55) {
-                        creditDTO.setRate(scoredRate.subtract(BigDecimal.valueOf(3)));
-                        scoredRate = creditDTO.getRate();
-                    } else continue;
-            }
-               else if (gender.equals("NOTBINARY")){
-                creditDTO.setRate(scoredRate.add(BigDecimal.valueOf(3)));
-                scoredRate = creditDTO.getRate();
-            } else continue;
+            scoredRate = determineGender(scoredRate);
+            creditDTO.setRate(scoredRate);
 
 
 //Стаж работы:
@@ -178,11 +142,106 @@ public class ScoringService {
     }
 
 
+//-----------------------------------------------
+
+
+    public BigDecimal determineStatusJob(BigDecimal scoredRate){
+        String status = String.valueOf(this.employmentDTO.getEmploymentStatus());
+
+        switch (status) {
+            case "FREELANCER":
+                scoredRate = (baseRate.add(BigDecimal.valueOf(1)));
+                break;
+            case "ENTERPRENEUR":
+                scoredRate = (baseRate.add(BigDecimal.valueOf(3)));
+                break;
+            default:
+                scoredRate = scoredRate;
+                break;
+        } return scoredRate;
+    }
+
+
+    public BigDecimal determinePosition(BigDecimal scoredRate){
+        String position = String.valueOf(this.employmentDTO.getPosition());
+        switch (position) {
+            case "MANAGER":
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+                break;
+            case "TOPMANAGER":
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(4)));
+                break;
+            default:
+                scoredRate = scoredRate;
+                break;
+        } return scoredRate;
+
+    }
+
+    public BigDecimal determineMarStatus(BigDecimal scoredRate){
+        if((this.scoringDataDTO.getMaritalStatus()).equals(MaritalStatus.MARRIED)){
+            scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+        } else if ((this.scoringDataDTO.getMaritalStatus()).equals(MaritalStatus.DIVORCED)){
+            scoredRate = (scoredRate.add(BigDecimal.valueOf(1)));
+        } else  scoredRate = creditDTO.getRate();
+        return scoredRate;
+    }
+
+    //1 вариант
+    public BigDecimal determineGender(BigDecimal scoredRate){
+        int age = Period.between(scoringDataDTO.getBirthdate(), LocalDate.now()).getYears();
+
+        if((this.scoringDataDTO.getGender()).equals(Gender.MALE)) {
+            if (age > 35 & age < 60) {
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+            } else scoredRate = scoredRate;
+        }
+
+        else if ((this.scoringDataDTO.getGender()).equals(Gender.FEMALE)) {
+            if (age > 30 & age < 55) {
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+            } else scoredRate = scoredRate;
+        }
+
+        else {
+            scoredRate = (scoredRate.add(BigDecimal.valueOf(3)));
+        }
+        return scoredRate;
+    }
+
+
+   /* // 2 вариант
+    public BigDecimal determineGender(BigDecimal scoredRate){
+        int age = Period.between(scoringDataDTO.getBirthdate(), LocalDate.now()).getYears();
+
+        Enum g = scoringDataDTO.getGender();
+
+        if((g == (Gender.MALE))) {
+            if (age > 35 & age < 60) {
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+            } else scoredRate = scoredRate;
+        }
+
+        else if (g == (Gender.FEMALE)) {
+            if (age > 30 & age < 55) {
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+            } else scoredRate = scoredRate;
+        }
+
+        else {
+            scoredRate = (scoredRate.add(BigDecimal.valueOf(3)));
+        }
+        return scoredRate;
+    }*/
+
+
+
+
     public BigDecimal calculateCreditMonthlyPayment(BigDecimal amount, BigDecimal monthlyRate, Integer term){
-            BigDecimal numerator = monthlyRate.multiply((monthlyRate.add(BigDecimal.valueOf(1))).pow(term));
-            BigDecimal denominator = ((monthlyRate.add(BigDecimal.valueOf(1))).pow(term)).subtract(BigDecimal.valueOf(1));
-            BigDecimal monthPay = (numerator.divide(denominator)).multiply(amount);
-            return  monthPay;
+        BigDecimal numerator = monthlyRate.multiply((monthlyRate.add(BigDecimal.valueOf(1))).pow(term));
+        BigDecimal denominator = ((monthlyRate.add(BigDecimal.valueOf(1))).pow(term)).subtract(BigDecimal.valueOf(1));
+        BigDecimal monthPay = (numerator.divide(denominator)).multiply(amount);
+        return  monthPay;
     }
 
     public BigDecimal calculatePsk(Integer term, BigDecimal amount, BigDecimal monthlyPayment){
@@ -233,11 +292,11 @@ public class ScoringService {
             paymentScheduleElementList.add(paymentScheduleElement);
         }
         for (PaymentScheduleElement p:paymentScheduleElementList
-             ) {
+        ) {
             System.out.println(p);
         }
         return paymentScheduleElementList;
     }
 
-}
 
+}
