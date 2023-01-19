@@ -7,10 +7,10 @@ import ru.neostudy.loanConveyorProject.conveyor.dto.CreditDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.EmploymentDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.PaymentScheduleElement;
 import ru.neostudy.loanConveyorProject.conveyor.dto.ScoringDataDTO;
-import ru.neostudy.loanConveyorProject.conveyor.dto.enums.EmploymentStatus;
-import ru.neostudy.loanConveyorProject.conveyor.dto.enums.Gender;
-import ru.neostudy.loanConveyorProject.conveyor.dto.enums.MaritalStatus;
-import ru.neostudy.loanConveyorProject.conveyor.dto.enums.Position;
+import ru.neostudy.loanConveyorProject.conveyor.enums.EmploymentStatus;
+import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
+import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
+import ru.neostudy.loanConveyorProject.conveyor.enums.Position;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Period;
@@ -149,10 +149,10 @@ public class ScoringService{
         String status = String.valueOf(this.employmentDTO.getEmploymentStatus());
 
         switch (status) {
-            case "FREELANCER":
+            case "SELFEMPLOYED":
                 scoredRate = (baseRate.add(BigDecimal.valueOf(1)));
                 break;
-            case "ENTERPRENEUR":
+            case "BUSINESSOWNER":
                 scoredRate = (baseRate.add(BigDecimal.valueOf(3)));
                 break;
             default:
@@ -165,8 +165,8 @@ public class ScoringService{
     public BigDecimal determinePosition(BigDecimal scoredRate){
         String position = String.valueOf(this.employmentDTO.getPosition());
         switch (position) {
-            case "MANAGER":
-                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
+            case "MID_MANAGER":
+                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(2)));
                 break;
             case "TOPMANAGER":
                 scoredRate = (scoredRate.subtract(BigDecimal.valueOf(4)));

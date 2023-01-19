@@ -16,23 +16,21 @@ public class LoanOfferService {
     @Value("${baseRate}")
     BigDecimal baseRate;
 
-
-    private LoanOfferDTO loanOffersVariety = new LoanOfferDTO();
-
+    private LoanOfferDTO loanOfferDTO;
     private List<LoanOfferDTO> loanOfferDTOList = new ArrayList<>();
 
-
-    private LoanApplicationRequestDTO loanApplicationRequestDTO;
     @Autowired
+    private LoanApplicationRequestDTO loanApplicationRequestDTO;
+
     public LoanOfferService(LoanApplicationRequestDTO loanApplicationRequestDTO) {
         this.loanApplicationRequestDTO = loanApplicationRequestDTO;
     }
 
     public List<LoanOfferDTO> createLoanOffers(){
-        createOfferDTO(false, false, loanApplicationRequestDTO);
-        createOfferDTO(false, true, loanApplicationRequestDTO);
-        createOfferDTO(true, false, loanApplicationRequestDTO);
-        createOfferDTO(true, true, loanApplicationRequestDTO);
+        createOfferDTO(false, false);
+        createOfferDTO(false, true);
+        createOfferDTO(true, false);
+        createOfferDTO(true, true);
 
         for (LoanOfferDTO l:this.loanOfferDTOList) {
             System.out.println(l);
@@ -41,57 +39,53 @@ public class LoanOfferService {
     }
 
 
-    public  List<LoanOfferDTO> createOfferDTO(Boolean isInsuranceEnabled, Boolean isSalaryClient,
-                                              LoanApplicationRequestDTO loanApplicationRequestDTO){
-        loanOffersVariety.setRequestedAmount(loanApplicationRequestDTO.getAmount());
-        loanOffersVariety.setTerm(loanApplicationRequestDTO.getTerm());
+    public  List<LoanOfferDTO> createOfferDTO(Boolean isInsuranceEnabled, Boolean isSalaryClient){
+        loanOfferDTO = new LoanOfferDTO();
+
+        loanOfferDTO.setRequestedAmount(loanApplicationRequestDTO.getAmount());
+        loanOfferDTO.setTerm(loanApplicationRequestDTO.getTerm());
 
 
         if(!(isInsuranceEnabled) & !(isInsuranceEnabled)){
-            loanOffersVariety.setTotalAmount(loanApplicationRequestDTO.getAmount());     // + 0%
-            loanOffersVariety.setRate(baseRate);                                        // - 0%
+            loanOfferDTO.setTotalAmount(loanApplicationRequestDTO.getAmount());     // + 0%
+            loanOfferDTO.setRate(baseRate);                                        // - 0%
+            loanOfferDTO.setMonthlyPayment(calculateMonthPayment(loanOfferDTO));
 
-            BigDecimal monthlyRate = ((loanOffersVariety.getRate().divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12)));
-            BigDecimal denominator = new BigDecimal(1).subtract((new BigDecimal(1).divide((new BigDecimal(1).add(monthlyRate)).pow(loanOffersVariety.getTerm()))));
-            loanOffersVariety.setMonthlyPayment(loanOffersVariety.getRequestedAmount().multiply((monthlyRate.divide(denominator))));
-
-            loanOfferDTOList.add(loanOffersVariety);
+            loanOfferDTOList.add(loanOfferDTO);
 
         }
         else if(!(isInsuranceEnabled) & isSalaryClient){
-            loanOffersVariety.setTotalAmount(loanApplicationRequestDTO.getAmount());  // + 0% salary client
-            loanOffersVariety.setRate(baseRate.subtract(BigDecimal.valueOf(1)));      // - 1%
+            loanOfferDTO.setTotalAmount(loanApplicationRequestDTO.getAmount());  // + 0% salary client
+            loanOfferDTO.setRate(baseRate.subtract(BigDecimal.valueOf(1)));      // - 1%
+            loanOfferDTO.setMonthlyPayment(calculateMonthPayment(loanOfferDTO));
 
-            BigDecimal monthlyRate = ((loanOffersVariety.getRate().divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12)));
-            BigDecimal denominator = new BigDecimal(1).subtract((new BigDecimal(1).divide((new BigDecimal(1).add(monthlyRate)).pow(loanOffersVariety.getTerm()))));
-            loanOffersVariety.setMonthlyPayment(loanOffersVariety.getRequestedAmount().multiply((monthlyRate.divide(denominator))));
-
-            loanOfferDTOList.add(loanOffersVariety);
+            loanOfferDTOList.add(loanOfferDTO);
 
         }
         else if(isInsuranceEnabled & !(isSalaryClient)){
-            loanOffersVariety.setTotalAmount((loanApplicationRequestDTO.getAmount()).multiply(new BigDecimal(1.1))); // +10% insurance
-            loanOffersVariety.setRate(baseRate.subtract(BigDecimal.valueOf(3)));                                         // - 3%
+            loanOfferDTO.setTotalAmount((loanApplicationRequestDTO.getAmount()).multiply(new BigDecimal(1.1))); // +10% insurance
+            loanOfferDTO.setRate(baseRate.subtract(BigDecimal.valueOf(3)));                                         // - 3%
+            loanOfferDTO.setMonthlyPayment(calculateMonthPayment(loanOfferDTO));
 
-            BigDecimal monthlyRate = ((loanOffersVariety.getRate().divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12)));
-            BigDecimal denominator = new BigDecimal(1).subtract((new BigDecimal(1).divide((new BigDecimal(1).add(monthlyRate)).pow(loanOffersVariety.getTerm()))));
-            loanOffersVariety.setMonthlyPayment(loanOffersVariety.getRequestedAmount().multiply((monthlyRate.divide(denominator))));
-
-            loanOfferDTOList.add(loanOffersVariety);
+            loanOfferDTOList.add(loanOfferDTO);
         }
         else{
-            loanOffersVariety.setTotalAmount((loanApplicationRequestDTO.getAmount()).multiply(new BigDecimal(1.1))); // +10% insurance + 0% salary cl.
-            loanOffersVariety.setRate(baseRate.subtract(BigDecimal.valueOf(4)));                                        // - (1% + 3%)
+            loanOfferDTO.setTotalAmount((loanApplicationRequestDTO.getAmount()).multiply(new BigDecimal(1.1))); // +10% insurance + 0% salary cl.
+            loanOfferDTO.setRate(baseRate.subtract(BigDecimal.valueOf(4)));                                        // - (1% + 3%)
+            loanOfferDTO.setMonthlyPayment(calculateMonthPayment(loanOfferDTO));
 
-            BigDecimal monthlyRate = ((loanOffersVariety.getRate().divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12)));
-            BigDecimal denominator = new BigDecimal(1).subtract((new BigDecimal(1).divide((new BigDecimal(1).add(monthlyRate)).pow(loanOffersVariety.getTerm()))));
-            loanOffersVariety.setMonthlyPayment(loanOffersVariety.getRequestedAmount().multiply((monthlyRate.divide(denominator))));
-
-            loanOfferDTOList.add(loanOffersVariety);
+            loanOfferDTOList.add(loanOfferDTO);
         }
 
         return loanOfferDTOList;
 
+    }
+
+    public BigDecimal calculateMonthPayment(LoanOfferDTO loanOfferDTO){
+        BigDecimal monthlyRate = (((loanOfferDTO.getRate()).divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12)));
+        BigDecimal denominator = (new BigDecimal(1)).subtract((new BigDecimal(1).divide((new BigDecimal(1).add(monthlyRate)).pow(loanOfferDTO.getTerm()))));
+        BigDecimal calculatedMonthlPay = (loanOfferDTO.getRequestedAmount().multiply((monthlyRate.divide(denominator))));
+        return calculatedMonthlPay;
     }
 
 

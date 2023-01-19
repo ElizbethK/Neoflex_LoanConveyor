@@ -1,6 +1,7 @@
 package ru.neostudy.loanConveyorProject.conveyor.controller;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,6 +19,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/conveyor")
 public class ConveyorController {
+
+    @Autowired
+    LoanOfferService loanOfferService;
+
+    @Autowired
+    ScoringService scoringService;
+
+
 
 //  POST: /conveyor/offers - расчёт возможных условий кредита.
 //  Request - LoanApplicationRequestDTO, response - List<LoanOfferDTO>
@@ -37,7 +46,7 @@ public class ConveyorController {
             throw new LoanApplicationNotCreatedException(errorMsg.toString());
         }
 
-        LoanOfferService loanOfferService = new LoanOfferService(loanApplicationRequestDTO);
+        loanOfferService = new LoanOfferService(loanApplicationRequestDTO);
         return loanOfferService.createLoanOffers();
     }
 
@@ -61,7 +70,7 @@ public class ConveyorController {
            }
            throw new LoanApplicationNotCreatedException(errorMsg.toString());
        }
-       ScoringService scoringService = new ScoringService(scoringDataDTO, employmentDTO);
+       scoringService = new ScoringService(scoringDataDTO, employmentDTO);
        return scoringService.score();
    }
 

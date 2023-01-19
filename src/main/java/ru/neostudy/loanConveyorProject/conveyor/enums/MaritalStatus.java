@@ -1,4 +1,4 @@
-package ru.neostudy.loanConveyorProject.conveyor.dto.enums;
+package ru.neostudy.loanConveyorProject.conveyor.enums;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum MaritalStatus {
-    SINGLE, MARRIED, DIVORCED
+    SINGLE, MARRIED, DIVORCED, WIDOW_WIDOWER
 }

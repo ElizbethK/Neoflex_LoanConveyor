@@ -2,6 +2,8 @@ package ru.neostudy.loanConveyorProject.conveyor.dto;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
+import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
+import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
 
 
 import javax.validation.constraints.*;
@@ -30,7 +32,7 @@ public class ScoringDataDTO {
     private String middleName;
 
 
-    private Enum gender;
+    private Gender gender;
 
     @NotEmpty(message = "should not be empty")
     private LocalDate birthdate;
@@ -48,7 +50,7 @@ public class ScoringDataDTO {
     private String passportIssueBranch;
 
 
-    private Enum maritalStatus;
+    private MaritalStatus maritalStatus;
 
     @NotEmpty(message = "should not be empty")
     private Integer dependentAmount;

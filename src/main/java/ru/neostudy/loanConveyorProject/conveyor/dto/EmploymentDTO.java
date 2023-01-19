@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.stereotype.Component;
+import ru.neostudy.loanConveyorProject.conveyor.enums.EmploymentStatus;
+import ru.neostudy.loanConveyorProject.conveyor.enums.Position;
 
 
 import javax.validation.constraints.NotEmpty;
@@ -19,7 +21,7 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 public class EmploymentDTO {
 
-    private Enum employmentStatus;
+    private EmploymentStatus employmentStatus;
 
     @NotEmpty(message = "should not be empty")
     private String employerINN;
@@ -28,7 +30,7 @@ public class EmploymentDTO {
     private BigDecimal salary;
 
 
-    private Enum position;
+    private Position position;
 
     @NotNull
     private Integer workExperienceTotal;

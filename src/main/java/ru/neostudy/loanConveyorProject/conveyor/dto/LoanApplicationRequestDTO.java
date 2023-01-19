@@ -57,6 +57,4 @@ public class LoanApplicationRequestDTO {
     @Pattern(regexp = "\\d{6}", message = "this field must consist of 6 numbers")
     private String passportNumber;
 
-
-
 }

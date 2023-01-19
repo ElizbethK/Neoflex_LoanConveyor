@@ -1,4 +1,4 @@
-package ru.neostudy.loanConveyorProject.conveyor.dto.enums;
+package ru.neostudy.loanConveyorProject.conveyor.enums;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -6,5 +6,5 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum Position {
-    LABORER, MANAGER, TOPMANAGER
+    WORKER, MID_MANAGER, TOPMANAGER, OWNER
 }

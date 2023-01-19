@@ -5,7 +5,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.neostudy.loanConveyorProject.conveyor.dto.EmploymentDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.ScoringDataDTO;
-import ru.neostudy.loanConveyorProject.conveyor.dto.enums.Position;
+import ru.neostudy.loanConveyorProject.conveyor.enums.Position;
 
 import java.math.BigDecimal;
 
@@ -38,24 +38,20 @@ class ScoringServiceTest {
 
     @Test
     void determinePositionShouldBeMANAGER() throws Exception {
-        given(employmentDTO.getPosition()).willReturn(Position.MANAGER);
-
-        assertEquals(BigDecimal.valueOf(7), scoringService.determinePosition(BigDecimal.valueOf(10)));
-
+        given(employmentDTO.getPosition()).willReturn(Position.MID_MANAGER);
+        assertEquals(BigDecimal.valueOf(8), scoringService.determinePosition(BigDecimal.valueOf(10)));
     }
 
     @Test
     void determinePositionShouldBeTOPMANAGER() {
         given(this.employmentDTO.getPosition()).willReturn(Position.TOPMANAGER);
         assertEquals(BigDecimal.valueOf(6), scoringService.determinePosition(BigDecimal.valueOf(10)));
-
     }
 
     @Test
     void determinePositionShouldBeLABORER() {
-        given(this.employmentDTO.getPosition()).willReturn(Position.LABORER);
+        given(this.employmentDTO.getPosition()).willReturn(Position.WORKER);
         assertEquals(BigDecimal.valueOf(10), scoringService.determinePosition(BigDecimal.valueOf(10)));
-
     }
 
 
@@ -65,6 +61,7 @@ class ScoringServiceTest {
 
     @Test
     void determineGender() {
+
     }
 
     @Test

@@ -1,4 +1,4 @@
-package ru.neostudy.loanConveyorProject.conveyor.dto.enums;
+package ru.neostudy.loanConveyorProject.conveyor.enums;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
