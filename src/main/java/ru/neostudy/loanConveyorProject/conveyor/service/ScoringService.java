@@ -1,5 +1,7 @@
 package ru.neostudy.loanConveyorProject.conveyor.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,7 @@ import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
 import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
 import ru.neostudy.loanConveyorProject.conveyor.enums.Position;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.ArrayList;
@@ -20,6 +23,7 @@ import java.util.List;
 
 @Service
 public class ScoringService{
+    private static final Logger logger = LoggerFactory.getLogger(ScoringService.class);
 
     @Value("${baseRate}")
     BigDecimal baseRate;
@@ -33,7 +37,7 @@ public class ScoringService{
 
 
 
-    private CreditDTO creditDTO = new CreditDTO();
+    private CreditDTO creditDTO;
 
     @Autowired
     private EmploymentDTO employmentDTO;
@@ -42,9 +46,12 @@ public class ScoringService{
     private ScoringDataDTO scoringDataDTO;
 
     public ScoringService(ScoringDataDTO scoringDataDTO, EmploymentDTO employmentDTO) {
+        logger.info("Начало работы конструктора ScoringService");
         this.scoringDataDTO = scoringDataDTO;
         this.employmentDTO = employmentDTO;
+        this.creditDTO = new CreditDTO();
         this.scoredRate = baseRate;
+        logger.info("Завершение работы конструктора ScoringService");
 
     }
 
@@ -52,8 +59,11 @@ public class ScoringService{
     //-----------------------------------------------------------
 
     public CreditDTO score() {
+        logger.info("Запущен метод score");
+        creditDTO = new CreditDTO();
         creditDTO.setAmount(scoringDataDTO.getAmount());
         creditDTO.setTerm(scoringDataDTO.getTerm());
+        creditDTO.setRate(scoredRate);
 
 
         while (decision = true) {
@@ -127,13 +137,12 @@ public class ScoringService{
             System.out.println("scoredRate = creditDTO.getRate = " + creditDTO.getRate());
 
 //Высчитать размер ежемесячного платежа(monthlyPayment):
-            BigDecimal monthlyRate = ((creditDTO.getRate().divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12)));
+            BigDecimal monthlyRate = calculateMonthlyRate();
             BigDecimal monthlyPayment = calculateCreditMonthlyPayment(creditDTO.getAmount(), monthlyRate, creditDTO.getTerm());
             creditDTO.setMonthlyPayment(monthlyPayment);
 
 //Высчитать полную стоимость кредита(psk):
-            creditDTO.setPsk(calculatePsk(creditDTO.getTerm(), creditDTO.getAmount(),
-                    creditDTO.getMonthlyPayment()));
+            creditDTO.setPsk(calculatePsk(creditDTO.getTerm(), creditDTO.getAmount()));
 
 // Высчитать график ежемесячных платежей (List<PaymentScheduleElement>):
             creditDTO.setPaymentSchedule(calculateSchedule());
@@ -146,14 +155,15 @@ public class ScoringService{
 
 
     public BigDecimal determineStatusJob(BigDecimal scoredRate){
+
         String status = String.valueOf(this.employmentDTO.getEmploymentStatus());
 
         switch (status) {
             case "SELFEMPLOYED":
-                scoredRate = (baseRate.add(BigDecimal.valueOf(1)));
+                scoredRate = (scoredRate.add(BigDecimal.valueOf(1)));
                 break;
             case "BUSINESSOWNER":
-                scoredRate = (baseRate.add(BigDecimal.valueOf(3)));
+                scoredRate = (scoredRate.add(BigDecimal.valueOf(3)));
                 break;
             default:
                 scoredRate = scoredRate;
@@ -179,15 +189,15 @@ public class ScoringService{
     }
 
     public BigDecimal determineMarStatus(BigDecimal scoredRate){
-        if((this.scoringDataDTO.getMaritalStatus()).equals(MaritalStatus.MARRIED)){
+        if((scoringDataDTO.getMaritalStatus()).equals(MaritalStatus.MARRIED)){
             scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
         } else if ((this.scoringDataDTO.getMaritalStatus()).equals(MaritalStatus.DIVORCED)){
             scoredRate = (scoredRate.add(BigDecimal.valueOf(1)));
-        } else  scoredRate = creditDTO.getRate();
+        }
         return scoredRate;
     }
 
-    //1 вариант
+
     public BigDecimal determineGender(BigDecimal scoredRate){
         int age = Period.between(scoringDataDTO.getBirthdate(), LocalDate.now()).getYears();
 
@@ -209,48 +219,40 @@ public class ScoringService{
         return scoredRate;
     }
 
-
-   /* // 2 вариант
-    public BigDecimal determineGender(BigDecimal scoredRate){
-        int age = Period.between(scoringDataDTO.getBirthdate(), LocalDate.now()).getYears();
-
-        Enum g = scoringDataDTO.getGender();
-
-        if((g == (Gender.MALE))) {
-            if (age > 35 & age < 60) {
-                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
-            } else scoredRate = scoredRate;
-        }
-
-        else if (g == (Gender.FEMALE)) {
-            if (age > 30 & age < 55) {
-                scoredRate = (scoredRate.subtract(BigDecimal.valueOf(3)));
-            } else scoredRate = scoredRate;
-        }
-
-        else {
-            scoredRate = (scoredRate.add(BigDecimal.valueOf(3)));
-        }
-        return scoredRate;
-    }*/
-
-
+    public BigDecimal calculateMonthlyRate(){
+        return (((creditDTO.getRate().divide(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(12), 4, RoundingMode.HALF_UP)));
+    }
 
 
     public BigDecimal calculateCreditMonthlyPayment(BigDecimal amount, BigDecimal monthlyRate, Integer term){
-        BigDecimal numerator = monthlyRate.multiply((monthlyRate.add(BigDecimal.valueOf(1))).pow(term));
+        BigDecimal numerator = monthlyRate.multiply(((monthlyRate.add(BigDecimal.valueOf(1))).pow(term)));
+ //Разложение числителя по действиям для проверки корректности:
+       /* BigDecimal numerator = (((monthlyRate.add(BigDecimal.valueOf(1)))));
+              numerator = numerator.pow(term);
+              numerator = monthlyRate.multiply(numerator);*/
+
         BigDecimal denominator = ((monthlyRate.add(BigDecimal.valueOf(1))).pow(term)).subtract(BigDecimal.valueOf(1));
-        BigDecimal monthPay = (numerator.divide(denominator)).multiply(amount);
+ //Разложение знаменателя по действиям для проверки корректности:
+       /* BigDecimal denominator = (monthlyRate.add(BigDecimal.valueOf(1)));
+        denominator = denominator.pow(term);
+        denominator = denominator.subtract(BigDecimal.valueOf(1));*/
+
+        BigDecimal monthPay = (numerator.divide(denominator,4, RoundingMode.HALF_UP)).multiply(amount);
         return  monthPay;
     }
 
-    public BigDecimal calculatePsk(Integer term, BigDecimal amount, BigDecimal monthlyPayment){
+    public BigDecimal calculatePsk(Integer term, BigDecimal amount){
+
+        BigDecimal monthlyPayment = calculateCreditMonthlyPayment(amount, calculateMonthlyRate(), term);
+
         BigDecimal s = monthlyPayment.multiply(BigDecimal.valueOf(term));
-        BigDecimal numerator = (s.divide(amount)).subtract(BigDecimal.valueOf(1));
-        BigDecimal denominator = BigDecimal.valueOf(term / 12);
-        BigDecimal psk = (numerator.divide(denominator)).multiply(BigDecimal.valueOf(100));
+        BigDecimal numerator = (s.divide(amount, 4, RoundingMode.HALF_UP)).subtract(BigDecimal.valueOf(1));
+        BigDecimal denominator = BigDecimal.valueOf(term).divide(BigDecimal.valueOf(12));
+        BigDecimal psk = (numerator.divide(denominator, 4, RoundingMode.HALF_UP)).multiply(BigDecimal.valueOf(100));
         return psk;
     }
+
+
 
     public List<PaymentScheduleElement> calculateSchedule(){
         List<PaymentScheduleElement> paymentScheduleElementList = new ArrayList<>();
@@ -277,8 +279,8 @@ public class ScoringService{
             paymentScheduleElement.setTotalPayment(totalPay);
 
             //interestPayment
-            BigDecimal denominator = BigDecimal.valueOf(nowDate.lengthOfMonth()).divide(BigDecimal.valueOf(nowDate.lengthOfYear()));
-            interestPay = remainingD.multiply((creditDTO.getRate()).divide(BigDecimal.valueOf(100))).multiply(denominator);
+            BigDecimal denominator = BigDecimal.valueOf(nowDate.lengthOfMonth()).divide(BigDecimal.valueOf(nowDate.lengthOfYear()), 4, RoundingMode.HALF_UP);
+            interestPay = remainingD.multiply((creditDTO.getRate()).divide(BigDecimal.valueOf(100), 4, RoundingMode.HALF_UP)).multiply(denominator);
             paymentScheduleElement.setInterestPayment(interestPay);
 
             //debtPayment
@@ -296,6 +298,7 @@ public class ScoringService{
             System.out.println(p);
         }
         return paymentScheduleElementList;
+
     }
 
 

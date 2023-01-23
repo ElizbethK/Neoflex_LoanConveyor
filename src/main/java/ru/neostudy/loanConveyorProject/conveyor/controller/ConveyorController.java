@@ -71,7 +71,8 @@ public class ConveyorController {
            throw new LoanApplicationNotCreatedException(errorMsg.toString());
        }
        scoringService = new ScoringService(scoringDataDTO, employmentDTO);
-       return scoringService.score();
+       CreditDTO creditDTO = scoringService.score();
+       return creditDTO;
    }
 
 

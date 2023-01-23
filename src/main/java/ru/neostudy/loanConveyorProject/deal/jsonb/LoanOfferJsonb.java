@@ -1,23 +1,18 @@
-package ru.neostudy.loanConveyorProject.conveyor.dto;
+package ru.neostudy.loanConveyorProject.deal.jsonb;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
-
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 
 @Getter
 @Setter
+@AllArgsConstructor
 @ToString
-public class LoanOfferDTO {
+public class LoanOfferJsonb implements Serializable {
 
-
-    //Должен генерироваться автоматически
     private Long applicationId;
-
     private BigDecimal requestedAmount;
     private BigDecimal totalAmount;
     private Integer term;
@@ -26,9 +21,9 @@ public class LoanOfferDTO {
     private Boolean isInsuranceEnabled;
     private Boolean isSalaryClient;
 
-    public LoanOfferDTO() {
+    public LoanOfferJsonb() {
         this.applicationId = (long)(1 + Math.random() * 999);
     }
+
+
 }
-
-

@@ -1,4 +1,4 @@
-package ru.neostudy.loanConveyorProject.conveyor.enums;
+package ru.neostudy.loanConveyorProject.deal.enums;
 
 public enum CreditStatus {
     CALCULATED,

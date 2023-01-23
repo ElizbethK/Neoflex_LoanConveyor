@@ -3,7 +3,7 @@ package ru.neostudy.loanConveyorProject.deal.entity;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import ru.neostudy.loanConveyorProject.conveyor.dto.PaymentScheduleElement;
-import ru.neostudy.loanConveyorProject.conveyor.enums.CreditStatus;
+import ru.neostudy.loanConveyorProject.deal.enums.CreditStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;

@@ -11,7 +11,6 @@ import ru.neostudy.loanConveyorProject.conveyor.enums.Position;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 
 @Component

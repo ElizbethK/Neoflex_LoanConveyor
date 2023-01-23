@@ -1,8 +1,7 @@
 package ru.neostudy.loanConveyorProject.deal.entity;
 
 import lombok.Data;
-import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
-import ru.neostudy.loanConveyorProject.conveyor.enums.ApplicationStatus;
+import ru.neostudy.loanConveyorProject.deal.enums.ApplicationStatus;
 
 import javax.persistence.*;
 import java.time.LocalDate;

@@ -67,4 +67,6 @@ public class ScoringDataDTO {
     private Boolean isSalaryClient;
 
 
+
+
 }

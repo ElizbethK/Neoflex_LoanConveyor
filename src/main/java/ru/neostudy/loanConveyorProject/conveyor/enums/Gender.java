@@ -5,7 +5,17 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public enum Gender {
-    MALE,
-    FEMALE,
-    NOTBINARY
+    MALE("MALE"),
+    FEMALE("FEMALE"),
+    NOTBINARY("NOTBINARY");
+
+    private String value;
+
+    Gender(String value) {
+        this.value = value;
+    }
+
+    public String getValue(){
+        return value;
+    }
 }
