@@ -1,4 +1,4 @@
-package ru.neostudy.LoanConveyor;
+package ru.neostudy.loanConveyorProject;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
