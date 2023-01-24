@@ -28,6 +28,7 @@ public class ConveyorController {
 
 
 
+
 //  POST: /conveyor/offers - расчёт возможных условий кредита.
 //  Request - LoanApplicationRequestDTO, response - List<LoanOfferDTO>
 
@@ -57,7 +58,6 @@ public class ConveyorController {
 
    @PostMapping("/calculation")
    public CreditDTO getCalculatedCredit(@RequestBody @Valid ScoringDataDTO scoringDataDTO,
-                                        @RequestBody @Valid  EmploymentDTO employmentDTO,
                                         BindingResult bindingResult){
        if (bindingResult.hasErrors()){
            StringBuilder errorMsg = new StringBuilder();
@@ -70,7 +70,7 @@ public class ConveyorController {
            }
            throw new LoanApplicationNotCreatedException(errorMsg.toString());
        }
-       scoringService = new ScoringService(scoringDataDTO, employmentDTO);
+       scoringService = new ScoringService(scoringDataDTO);
        CreditDTO creditDTO = scoringService.score();
        return creditDTO;
    }

@@ -1,18 +1,22 @@
-package ru.neostudy.loanConveyorProject.deal.jsonb;
+package ru.neostudy.loanConveyorProject.deal.entity;
 
 
 import lombok.*;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @ToString
+@Data
 public class PaymentScheduleJsonb implements Serializable {
+
     private Integer number;
     private LocalDate date;
     private BigDecimal totalPayment;  //Сумма платежа

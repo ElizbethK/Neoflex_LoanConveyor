@@ -15,7 +15,6 @@ import java.math.BigDecimal;
 public class LoanOfferDTO {
 
 
-    //Должен генерироваться автоматически
     private Long applicationId;
 
     private BigDecimal requestedAmount;

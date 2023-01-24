@@ -38,7 +38,7 @@ class ScoringServiceTest {
 
 
     public ScoringServiceTest() {
-        this.scoringService = new ScoringService(scoringDataDTO, employmentDTO);
+        this.scoringService = new ScoringService(scoringDataDTO);
     }
 
     @Test

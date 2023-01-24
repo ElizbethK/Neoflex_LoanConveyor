@@ -1,15 +1,16 @@
-package ru.neostudy.loanConveyorProject.deal.jsonb;
+package ru.neostudy.loanConveyorProject.deal.entity;
 
 import lombok.*;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.math.BigDecimal;
-
 
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
+@Data
 public class LoanOfferJsonb implements Serializable {
 
     private Long applicationId;

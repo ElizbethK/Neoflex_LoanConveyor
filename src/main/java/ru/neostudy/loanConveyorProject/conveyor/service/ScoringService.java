@@ -45,7 +45,7 @@ public class ScoringService{
     @Autowired
     private ScoringDataDTO scoringDataDTO;
 
-    public ScoringService(ScoringDataDTO scoringDataDTO, EmploymentDTO employmentDTO) {
+    public ScoringService(ScoringDataDTO scoringDataDTO) {
         logger.info("Начало работы конструктора ScoringService");
         this.scoringDataDTO = scoringDataDTO;
         this.employmentDTO = employmentDTO;

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
+import ru.neostudy.loanConveyorProject.deal.entity.Application;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ public class LoanOfferService {
 
     private LoanOfferDTO loanOfferDTO;
     private List<LoanOfferDTO> loanOfferDTOList = new ArrayList<>();
+
+    @Autowired
+    private Application application;
 
     @Autowired
     private LoanApplicationRequestDTO loanApplicationRequestDTO;
@@ -41,6 +45,7 @@ public class LoanOfferService {
 
     public  List<LoanOfferDTO> createOfferDTO(Boolean isInsuranceEnabled, Boolean isSalaryClient){
         loanOfferDTO = new LoanOfferDTO();
+        loanOfferDTO.setApplicationId(application.getApplicationId());
 
         loanOfferDTO.setRequestedAmount(loanApplicationRequestDTO.getAmount());
         loanOfferDTO.setTerm(loanApplicationRequestDTO.getTerm());

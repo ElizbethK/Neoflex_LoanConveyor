@@ -19,6 +19,7 @@ import java.time.LocalDate;
 @ToString
 @NoArgsConstructor
 public class LoanApplicationRequestDTO {
+
     @NotEmpty(message = "should not be empty")
     @Min(value = 10000, message = "the amount mustn`t be less than 10000")
     private BigDecimal amount;
