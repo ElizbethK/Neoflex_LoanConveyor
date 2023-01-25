@@ -1,9 +1,7 @@
 package ru.neostudy.loanConveyorProject.deal.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.stereotype.Component;
@@ -12,8 +10,11 @@ import ru.neostudy.loanConveyorProject.deal.enums.ApplicationStatus;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
+
+@AllArgsConstructor
 @Component
 @Getter
 @Setter
@@ -67,6 +68,10 @@ public class Application {
     @Column(columnDefinition = "jsonb", name = "status_history")
     private List<StatusHistoryJsonb> statusHistoryList;
 
+
+    public Application() {
+        this.statusHistoryList = new ArrayList<StatusHistoryJsonb>();
+    }
 
     public void setStatusHistoryList(StatusHistoryJsonb statusHistoryJsonb) {
         statusHistoryList.add(statusHistoryJsonb);

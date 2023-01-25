@@ -1,9 +1,7 @@
 package ru.neostudy.loanConveyorProject.deal.entity;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
-import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.TypeDef;
 import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
 import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
@@ -13,6 +11,8 @@ import javax.validation.constraints.Pattern;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Data

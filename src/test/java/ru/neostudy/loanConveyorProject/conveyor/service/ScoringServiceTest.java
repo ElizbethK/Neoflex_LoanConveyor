@@ -43,10 +43,6 @@ class ScoringServiceTest {
 
     @Test
     void score() {
-
-
-
-
     }
 
     @Test

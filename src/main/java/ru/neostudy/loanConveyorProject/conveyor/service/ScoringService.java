@@ -48,7 +48,6 @@ public class ScoringService{
     public ScoringService(ScoringDataDTO scoringDataDTO) {
         logger.info("Начало работы конструктора ScoringService");
         this.scoringDataDTO = scoringDataDTO;
-        this.employmentDTO = employmentDTO;
         this.creditDTO = new CreditDTO();
         this.scoredRate = baseRate;
         logger.info("Завершение работы конструктора ScoringService");
