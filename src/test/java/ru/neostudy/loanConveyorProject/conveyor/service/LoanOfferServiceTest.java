@@ -1,8 +1,11 @@
 package ru.neostudy.loanConveyorProject.conveyor.service;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
 
@@ -12,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.when;
 
-
+@ExtendWith(MockitoExtension.class)
 class LoanOfferServiceTest {
 
     @Mock
@@ -20,11 +23,10 @@ class LoanOfferServiceTest {
 
     LoanOfferDTO loanOfferDTO;
 
-
+    @InjectMocks
     private LoanOfferService loanOfferService;
 
     public LoanOfferServiceTest(){
-        MockitoAnnotations.openMocks(this);
         this.loanOfferService = new LoanOfferService(loanApplicationRequestDTO);
     }
 

@@ -1,9 +1,6 @@
 package ru.neostudy.loanConveyorProject.conveyor.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.stereotype.Component;
 import ru.neostudy.loanConveyorProject.conveyor.enums.EmploymentStatus;
 import ru.neostudy.loanConveyorProject.conveyor.enums.Position;
@@ -18,6 +15,7 @@ import java.math.BigDecimal;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class EmploymentDTO {
 
     private EmploymentStatus employmentStatus;
