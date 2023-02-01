@@ -14,9 +14,9 @@ import java.time.LocalDate;
 @Table(name = "passport")
 public class Passport {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator="passport_id_seq")
     @Column(name = "passport_id", nullable = false)
-    private long passportId;
+    private Integer passportId;
 
     @Column(name = "series")
     private String series;

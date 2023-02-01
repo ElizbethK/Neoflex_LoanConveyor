@@ -24,9 +24,9 @@ import java.util.List;
 public class Application {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator="application_id_seq")
     @Column(name = "application_id", nullable = false)
-    private long applicationId;
+    private Integer applicationId;
 
     //ForeignKey1
     @OneToOne(cascade = CascadeType.ALL)
@@ -40,11 +40,11 @@ public class Application {
 
     //Enum
     @Enumerated(EnumType.STRING)
-    @Column(name = "application_status")
+    @Column(name = "status")
     private ApplicationStatus applicationStatus;
 
 
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", columnDefinition = "TIMESTAMP")
     private LocalDate creationDate;
 
 
@@ -54,7 +54,7 @@ public class Application {
      private LoanOfferDTO appliedOffer;
 
 
-    @Column(name = "sign_date")
+    @Column(name = "sign_date", columnDefinition = "TIMESTAMP")
     private LocalDate signDate;
 
 

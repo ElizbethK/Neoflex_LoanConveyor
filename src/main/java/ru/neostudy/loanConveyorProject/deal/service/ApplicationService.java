@@ -40,7 +40,7 @@ public class ApplicationService {
 
 
     public void chooseLoanOffer(LoanOfferDTO loanOfferDTO) throws ResourceNotFoundException {
-        Long id = loanOfferDTO.getApplicationId();
+        Integer id = loanOfferDTO.getApplicationId();
 
         Optional <Application> optionalApplication = applicationRepository.findById(id);
         Application application = optionalApplication.get();
@@ -58,7 +58,7 @@ public class ApplicationService {
 
     }
 
-    public Optional<Application> findById(Long id){
+    public Optional<Application> findById(Integer id){
         return applicationRepository.findById(id);
     }
 

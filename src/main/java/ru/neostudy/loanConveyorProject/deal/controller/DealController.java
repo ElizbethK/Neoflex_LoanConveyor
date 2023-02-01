@@ -4,6 +4,7 @@ package ru.neostudy.loanConveyorProject.deal.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 import ru.neostudy.loanConveyorProject.conveyor.controller.ConveyorController;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
@@ -31,11 +32,17 @@ public class DealController {
     @Autowired
     ScoringDataDTOService scoringDataDTOService;
 
+    @Autowired
+    private FeignDealClient feignDealClient;
+
+
     public DealController(ClientService clientService, ApplicationService applicationService, ScoringDataDTOService scoringDataDTOService) {
         this.clientService = clientService;
         this.applicationService = applicationService;
         this.scoringDataDTOService = scoringDataDTOService;
     }
+
+
 
 
    /*
@@ -49,8 +56,9 @@ public class DealController {
         Client client = clientService.createClient(loanApplicationRequestDTO);
         Application application = applicationService.createApplication(client);
 
-        ConveyorController conveyorController = new ConveyorController();
-        return conveyorController.getPossibleOffers( loanApplicationRequestDTO, bindingResult);
+
+
+        return feignDealClient.getPossibleOffers(loanApplicationRequestDTO);
     }
 
 
@@ -74,7 +82,7 @@ public class DealController {
     Request - FinishRegistrationRequestDTO, param - Long,  response void.
     */
     @PutMapping("/calculate/{applicationId}")
-    public void finishRegistration(@PathVariable(value = "applicationId") Long id,
+    public void finishRegistration(@PathVariable(value = "applicationId") Integer id,
                                    @RequestBody FinishRegistrationRequestDTO finishRegistrationRequestDTO,
                                    BindingResult bindingResult) throws ResourceNotFoundException {
         Optional <Application> optionalApplication = applicationService.findById(id);

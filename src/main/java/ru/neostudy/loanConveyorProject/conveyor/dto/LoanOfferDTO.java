@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 public class LoanOfferDTO {
 
 
-    private Long applicationId;
+    private Integer applicationId;
 
     private BigDecimal requestedAmount;
     private BigDecimal totalAmount;
@@ -26,7 +26,7 @@ public class LoanOfferDTO {
     private Boolean isSalaryClient;
 
     public LoanOfferDTO() {
-        this.applicationId = (long)(1 + Math.random() * 999);
+        this.applicationId = (int)(1 + Math.random() * 999);
     }
 }
 
