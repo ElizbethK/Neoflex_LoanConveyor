@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/loan_deal
+    username: user
+    password: password
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate.ddl-auto: validate
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    show-sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.xml
+    enabled: true
+databaseChangeLog:
+   includeAll:
+      path: classpath*:db/changelog/
+   include:
+      file: db/changelog/changelog-master.yaml

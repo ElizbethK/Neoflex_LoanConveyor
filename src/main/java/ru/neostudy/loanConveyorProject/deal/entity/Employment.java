@@ -20,13 +20,13 @@ import java.math.BigDecimal;
 public class Employment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator="employment_id_seq")
     @Column(name = "employment_id", nullable = false)
-    private long employmentId;
+    private Integer employmentId;
 
     //Enum
     @Enumerated(EnumType.STRING)
-    @Column(name = "employment_status")
+    @Column(name = "status")
     private EmploymentStatus employmentStatus;
 
 

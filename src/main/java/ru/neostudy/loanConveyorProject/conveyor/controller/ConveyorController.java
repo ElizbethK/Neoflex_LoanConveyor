@@ -32,6 +32,7 @@ public class ConveyorController {
 //  POST: /conveyor/offers - расчёт возможных условий кредита.
 //  Request - LoanApplicationRequestDTO, response - List<LoanOfferDTO>
 
+
     @PostMapping("/offers")
     public List<LoanOfferDTO> getPossibleOffers(@RequestBody @Valid LoanApplicationRequestDTO loanApplicationRequestDTO,
                                                 BindingResult bindingResult){
@@ -47,8 +48,8 @@ public class ConveyorController {
             throw new LoanApplicationNotCreatedException(errorMsg.toString());
         }
 
-        loanOfferService = new LoanOfferService(loanApplicationRequestDTO);
-        return loanOfferService.createLoanOffers();
+        loanOfferService = new LoanOfferService();
+        return loanOfferService.createLoanOffers(loanApplicationRequestDTO);
     }
 
 

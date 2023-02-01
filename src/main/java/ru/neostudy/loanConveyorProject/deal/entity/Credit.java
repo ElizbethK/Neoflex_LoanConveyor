@@ -21,9 +21,9 @@ import java.util.List;
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Credit {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator="credit_id_seq")
     @Column(name = "credit_id", nullable = false)
-    private long creditId;
+    private Integer creditId;
 
     @Column(name = "amount")
     private BigDecimal amount;

@@ -4,6 +4,7 @@ import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
 import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
@@ -21,9 +22,9 @@ import java.time.LocalDate;
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 public class Client {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY, generator="client_id_seq")
     @Column(name = "client_id", nullable = false)
-    private long clientId;
+    private Integer  clientId;
 
     @Column(name = "last_name")
     private String lastName;

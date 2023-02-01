@@ -1,0 +1,83 @@
+
+<?xml version="1.0" encoding="UTF-8" ?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+   http://www.liquibase.org/xml/ns/dbchangelog
+   http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+
+    <changeSet id="1" author="Elizaveta">
+        <createTable tableName="client">
+            <column name="client_id" type="serial">
+                <constraints primaryKey="true" primaryKeyName="client_id" />
+            </column>
+            <column name="last_name" type="varchar(30)"></column>
+            <column name="first_name" type="varchar(30)"></column>
+            <column name="middle_name" type="varchar(30)"></column>
+            <column name="birth_date" type="date"></column>
+            <column name="email" type="varchar(100)"></column>
+            <column name="gender" type="varchar(50)"></column>
+            <column name="marital_status" type="varchar(50)"></column>
+            <column name="dependent_amount" type="integer"></column>
+            <column name="passport_id" type="integer"></column>
+            <column name="employment_id" type="integer"></column>
+            <column name="account" type="varchar(50)"></column>
+        </createTable>
+        <addAutoIncrement tableName="client" columnName="client_id" columnDataType="bigint" startWith="1" incrementBy="1" />
+        <rollback>
+            <dropTable tableName="client"></dropTable>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="2" author="Elizaveta">
+
+        <createTable tableName="credit">
+            <column name="credit_id" type="serial">
+                <constraints primaryKey="true" primaryKeyName="credit_id" />
+            </column>
+            <column name="amount" type="decimal"></column>
+            <column name="term" type="integer"></column>
+            <column name="monthly_payment" type="decimal"></column>
+            <column name="rate" type="decimal"></column>
+            <column name="psk" type="decimal"></column>
+            <column name="payment_schedule" type="JSONB"></column>
+            <column name="insurance_enable" type="boolean"></column>
+            <column name="salary_client" type="boolean"></column>
+            <column name="credit_status" type="varchar(15)"></column>
+        </createTable>
+        <addAutoIncrement tableName="credit" columnName="credit_id" columnDataType="bigint" startWith="1" incrementBy="1" />
+        <rollback>
+            <dropTable tableName="credit"></dropTable>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="3" author="Elizaveta">
+        <createTable tableName="application">
+            <column name="application_id" type="serial">
+                <constraints primaryKey="true" primaryKeyName="application_id" />
+            </column>
+            <column name="client_id" type="BIGINT"></column>
+            <column name="credit_id" type="BIGINT"></column>
+            <column name="status" type="VARCHAR(50)"></column>
+            <column name="creation_date" type="TIMESTAMP"></column>
+            <column name="applied_offer" type="JSONB"></column>
+            <column name="sign_date" type="TIMESTAMP"></column>
+            <column name="ses_code" type="INTEGER"></column>
+            <column name="status_history" type="JSONB"></column>
+        </createTable>
+        <addAutoIncrement tableName="application" columnName="application_id" columnDataType="bigint" startWith="1" incrementBy="1" />
+
+        <addForeignKeyConstraint baseTableName="application" baseColumnNames="client_id" constraintName="client_id" referencedTableName="client" referencedColumnNames="client_id" />
+        <addForeignKeyConstraint baseTableName="application" baseColumnNames="credit_id" constraintName="credit_id" referencedTableName="credit" referencedColumnNames="credit_id" />
+
+        <rollback>
+            <dropTable tableName="application"></dropTable>
+        </rollback>
+    </changeSet>
+
+
+
+</databaseChangeLog>
