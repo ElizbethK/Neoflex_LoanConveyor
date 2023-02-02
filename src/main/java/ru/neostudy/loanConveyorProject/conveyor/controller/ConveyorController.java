@@ -1,6 +1,8 @@
 package ru.neostudy.loanConveyorProject.conveyor.controller;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import ru.neostudy.loanConveyorProject.conveyor.service.LoanOfferService;
 import ru.neostudy.loanConveyorProject.conveyor.service.ScoringService;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationErrorResponse;
 import ru.neostudy.loanConveyorProject.conveyor.util.LoanApplicationNotCreatedException;
+import ru.neostudy.loanConveyorProject.deal.service.ScoringDataDTOService;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -19,6 +22,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/conveyor")
 public class ConveyorController {
+    private static final Logger logger = LoggerFactory.getLogger(ConveyorController.class);
+
 
     @Autowired
     LoanOfferService loanOfferService;
@@ -36,6 +41,7 @@ public class ConveyorController {
     @PostMapping("/offers")
     public List<LoanOfferDTO> getPossibleOffers(@RequestBody @Valid LoanApplicationRequestDTO loanApplicationRequestDTO,
                                                 BindingResult bindingResult){
+        logger.info("ConveyorController. Запущен метод getPossibleOffers с {}", loanApplicationRequestDTO);
         if (bindingResult.hasErrors()){
             StringBuilder errorMsg = new StringBuilder();
 
@@ -49,7 +55,9 @@ public class ConveyorController {
         }
 
         loanOfferService = new LoanOfferService();
-        return loanOfferService.createLoanOffers(loanApplicationRequestDTO);
+        List<LoanOfferDTO> loanOfferDTOList = loanOfferService.createLoanOffers(loanApplicationRequestDTO);
+        logger.info("ConveyorController. Завершен getPossibleOffers. Создан {}", loanOfferDTOList);
+        return loanOfferDTOList;
     }
 
 
@@ -60,6 +68,7 @@ public class ConveyorController {
    @PostMapping("/calculation")
    public CreditDTO getCalculatedCredit(@RequestBody @Valid ScoringDataDTO scoringDataDTO,
                                         BindingResult bindingResult){
+       logger.info("ConveyorController. Запущен метод getCalculatedCredit c {}", scoringDataDTO);
        if (bindingResult.hasErrors()){
            StringBuilder errorMsg = new StringBuilder();
 
@@ -71,8 +80,9 @@ public class ConveyorController {
            }
            throw new LoanApplicationNotCreatedException(errorMsg.toString());
        }
-       scoringService = new ScoringService(scoringDataDTO);
-       CreditDTO creditDTO = scoringService.score();
+       scoringService = new ScoringService();
+       CreditDTO creditDTO = scoringService.score(scoringDataDTO);
+       logger.info("ConveyorController. Завершен getCalculatedCredit. {}", creditDTO);
        return creditDTO;
    }
 

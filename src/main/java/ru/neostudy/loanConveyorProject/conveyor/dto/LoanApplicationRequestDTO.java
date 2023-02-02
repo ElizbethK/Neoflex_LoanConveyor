@@ -2,10 +2,7 @@ package ru.neostudy.loanConveyorProject.conveyor.dto;
 
 
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +15,7 @@ import java.time.LocalDate;
 @Setter
 @ToString
 @NoArgsConstructor
+@AllArgsConstructor
 public class LoanApplicationRequestDTO {
 
     @NotEmpty(message = "should not be empty")
@@ -31,11 +29,11 @@ public class LoanApplicationRequestDTO {
 
     @NotEmpty(message = "should not be empty")
     @Pattern(regexp = "[a-zA-Z]{2,30}")
-    private String firstName;
+    private String lastName;
 
     @NotEmpty(message = "should not be empty")
     @Pattern(regexp = "[a-zA-Z]{2,30}")
-    private String lastName;
+    private String firstName;
 
     @Pattern(regexp = "[a-zA-Z]{0,30}")
     private String middleName;

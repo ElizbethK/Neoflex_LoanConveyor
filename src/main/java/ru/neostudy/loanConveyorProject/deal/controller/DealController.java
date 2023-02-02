@@ -1,6 +1,8 @@
 package ru.neostudy.loanConveyorProject.deal.controller;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/deal")
 public class DealController {
+    private static final Logger logger = LoggerFactory.getLogger(DealController.class);
+
 
     @Autowired
     ClientService clientService;
@@ -52,13 +56,16 @@ public class DealController {
     @PostMapping("/application")
     public List<LoanOfferDTO> createClientAndApp(@RequestBody @Valid LoanApplicationRequestDTO loanApplicationRequestDTO,
                                                 BindingResult bindingResult){
+        logger.info("DealController. Запущен метод createClientAndApp с {}", loanApplicationRequestDTO);
+
 
         Client client = clientService.createClient(loanApplicationRequestDTO);
         Application application = applicationService.createApplication(client);
+        
+        List<LoanOfferDTO> loanOfferDTOList = feignDealClient.getPossibleOffers(loanApplicationRequestDTO);
 
-
-
-        return feignDealClient.getPossibleOffers(loanApplicationRequestDTO);
+        logger.info("DealController. Завершен createClientAndApp. Создан {}, {}", client, application);
+        return applicationService.setIDForEachOffer(loanOfferDTOList, application);
     }
 
 
@@ -70,7 +77,9 @@ public class DealController {
 
     @PutMapping("/offer")
     public void chooseOffer(@RequestBody LoanOfferDTO loanOfferDTO) throws ResourceNotFoundException {
-        applicationService.chooseLoanOffer(loanOfferDTO);
+        logger.info("DealController. Запущен метод chooseOffer с {}", loanOfferDTO);
+        applicationService.updateApplication(loanOfferDTO);
+        logger.info("DealController. Запущен метод updateApplication");
     }
 
 
@@ -85,15 +94,19 @@ public class DealController {
     public void finishRegistration(@PathVariable(value = "applicationId") Integer id,
                                    @RequestBody FinishRegistrationRequestDTO finishRegistrationRequestDTO,
                                    BindingResult bindingResult) throws ResourceNotFoundException {
-        Optional <Application> optionalApplication = applicationService.findById(id);
-        optionalApplication.orElseThrow(() ->
-                new ResourceNotFoundException("Application with id " + id + " is not found"));
+        logger.info("DealController. Запущен метод finishRegistration с {}, {}", id, finishRegistrationRequestDTO);
+        logger.info("DealController. Поиск application по id");
+        Optional <Application> optionalApplication = Optional.ofNullable(applicationService.findById(id).orElseThrow(() ->
+                new ResourceNotFoundException("Application with id " + id + " is not found")));
+
 
         Application application = optionalApplication.get();
+
+        logger.info("DealController. Вызов метода consolidateScoringInformation");
         ScoringDataDTO scoringDataDTO = scoringDataDTOService.consolidateScoringInformation(application,finishRegistrationRequestDTO);
 
-        ConveyorController conveyorController = new ConveyorController();
-        conveyorController.getCalculatedCredit(scoringDataDTO, bindingResult);
+        feignDealClient.getCalculatedCredit(scoringDataDTO);
+        logger.info("DealController. Переход на ConveyorController. (метод getCalculatedCredit)");
     }
 
 

@@ -6,12 +6,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.springframework.stereotype.Component;
 import ru.neostudy.loanConveyorProject.conveyor.dto.PaymentScheduleElement;
 import ru.neostudy.loanConveyorProject.deal.enums.CreditStatus;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.List;
+
 
 @Getter
 @Setter
