@@ -1,9 +1,6 @@
 package ru.neostudy.loanConveyorProject.conveyor.dto;
 
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 
 
 import java.math.BigDecimal;
@@ -12,10 +9,11 @@ import java.math.BigDecimal;
 @Getter
 @Setter
 @ToString
+@AllArgsConstructor
 public class LoanOfferDTO {
 
 
-    private Integer applicationId;
+    private Long applicationId;
 
     private BigDecimal requestedAmount;
     private BigDecimal totalAmount;
@@ -26,7 +24,7 @@ public class LoanOfferDTO {
     private Boolean isSalaryClient;
 
     public LoanOfferDTO() {
-        this.applicationId = (int)(1 + Math.random() * 999);
+        this.applicationId = Long.valueOf((int)(1 + Math.random() * 999));
     }
 }
 

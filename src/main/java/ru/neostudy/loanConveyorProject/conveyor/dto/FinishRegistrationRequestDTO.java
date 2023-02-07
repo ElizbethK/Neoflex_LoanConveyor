@@ -1,9 +1,6 @@
 package ru.neostudy.loanConveyorProject.conveyor.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import ru.neostudy.loanConveyorProject.conveyor.dto.EmploymentDTO;
 import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
 import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
@@ -15,6 +12,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class FinishRegistrationRequestDTO {
     private Gender gender;
     private MaritalStatus maritalStatus;

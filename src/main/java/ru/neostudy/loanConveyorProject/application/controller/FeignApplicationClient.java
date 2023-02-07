@@ -12,7 +12,7 @@ import ru.neostudy.loanConveyorProject.deal.exception.ResourceNotFoundException;
 import javax.validation.Valid;
 import java.util.List;
 
-@FeignClient(value = "applicationClient", url = "http://localhost:8080/deal")
+@FeignClient(value = "applicationClient", url = "http://localhost:8081/deal")
 public interface FeignApplicationClient {
 
     @PostMapping("/application")

@@ -1,30 +1,34 @@
 package ru.neostudy.loanConveyorProject.deal.service;
 
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.neostudy.loanConveyorProject.conveyor.dto.ScoringDataDTO;
 import ru.neostudy.loanConveyorProject.conveyor.dto.FinishRegistrationRequestDTO;
 import ru.neostudy.loanConveyorProject.deal.entity.Application;
 import ru.neostudy.loanConveyorProject.deal.entity.Client;
+import ru.neostudy.loanConveyorProject.deal.entity.Credit;
 import ru.neostudy.loanConveyorProject.deal.entity.Passport;
 
 @Service
 public class ScoringDataDTOService {
-
-    @Autowired
-    private ScoringDataDTO scoringDataDTO = new ScoringDataDTO();
-
-    public ScoringDataDTOService(ScoringDataDTO scoringDataDTO) {
-        this.scoringDataDTO = scoringDataDTO;
-    }
-
+    private static final Logger logger = LoggerFactory.getLogger(ScoringDataDTOService.class);
 
     public ScoringDataDTO consolidateScoringInformation(Application application,
                                               FinishRegistrationRequestDTO finishRegistrationRequestDTO) {
+        logger.info("Вызван метод consolidateScoringInformation с параметрами: {}, {}",
+                application, finishRegistrationRequestDTO);
+
         Client client = application.getClient();
+        Credit credit = application.getCredit();
+
+        ScoringDataDTO scoringDataDTO = new ScoringDataDTO();
+        logger.info("Создан {}", scoringDataDTO);
 
         scoringDataDTO.setAmount(finishRegistrationRequestDTO.getDependentAmount());
+        scoringDataDTO.setTerm(credit.getTerm());
         scoringDataDTO.setFirstName(client.getFirstName());
         scoringDataDTO.setLastName(client.getLastName());
         scoringDataDTO.setMiddleName(client.getMiddleName());
@@ -42,10 +46,12 @@ public class ScoringDataDTOService {
 
         scoringDataDTO.setEmployment(finishRegistrationRequestDTO.getEmployment());
         scoringDataDTO.setAccount(finishRegistrationRequestDTO.getAccount());
+        scoringDataDTO.setIsSalaryClient(credit.isSalaryClient());
+        scoringDataDTO.setIsInsuranceEnabled(credit.isInsuranceEnable());
 
-//        scoringDataDTO.setIsInsuranceEnabled();
-//        scoringDataDTO.setIsSalaryClient();
-
+        logger.info("Заполнен {}", scoringDataDTO);
+        logger.info("Метод consolidateScoringInformation завершен");
         return scoringDataDTO;
+
     }
 }

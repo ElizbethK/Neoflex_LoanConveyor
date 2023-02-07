@@ -2,6 +2,7 @@ package ru.neostudy.loanConveyorProject.conveyor.dto;
 
 import lombok.*;
 import org.springframework.stereotype.Component;
+import ru.neostudy.loanConveyorProject.conveyor.enums.EmploymentStatus;
 import ru.neostudy.loanConveyorProject.conveyor.enums.Gender;
 import ru.neostudy.loanConveyorProject.conveyor.enums.MaritalStatus;
 
@@ -67,5 +68,9 @@ public class ScoringDataDTO {
     private Boolean isSalaryClient;
 
 
+
+    public Enum<EmploymentStatus> getEnumEmplStatus(EmploymentDTO employmentDTO){
+        return employmentDTO.getEmploymentStatus();
+    }
 
 }

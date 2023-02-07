@@ -12,6 +12,7 @@ import ru.neostudy.loanConveyorProject.deal.enums.ApplicationStatus;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -26,7 +27,7 @@ public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator="application_id_seq")
     @Column(name = "application_id", nullable = false)
-    private Integer applicationId;
+    private Long applicationId;
 
     //ForeignKey1
     @OneToOne(cascade = CascadeType.ALL)
@@ -65,10 +66,10 @@ public class Application {
     //Jsonb
     @Type(type = "jsonb")
     @Column(columnDefinition = "jsonb", name = "status_history")
-    private List<StatusHistoryJsonb> statusHistoryList;
+    private List<StatusHistoryJsonb> statusHistoryList = new ArrayList<>();
 
 
-    public void setStatusHistoryList(StatusHistoryJsonb statusHistoryJsonb) {
+    public void addToStatusHistoryList(StatusHistoryJsonb statusHistoryJsonb) {
         statusHistoryList.add(statusHistoryJsonb);
     }
 }

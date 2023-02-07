@@ -27,7 +27,15 @@ public class CreditDTO {
     private Boolean isSalaryClient;
     private List<PaymentScheduleElement> paymentSchedule;
 
+    private String creditDecision;
 
+public String determineCreditDecision(Boolean decision){
+    if(!decision){
+        creditDecision = "CREDIT DECLINED";
+    } else creditDecision = "CREDIT APPROVED";
+    return creditDecision;
+
+}
 
 
 
