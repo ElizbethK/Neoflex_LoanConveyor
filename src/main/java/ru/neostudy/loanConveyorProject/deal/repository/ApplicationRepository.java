@@ -6,7 +6,7 @@ import ru.neostudy.loanConveyorProject.deal.entity.Application;
 import ru.neostudy.loanConveyorProject.deal.entity.Client;
 
 @Repository
-public interface ApplicationRepository extends CrudRepository<Application, Integer> {
+public interface ApplicationRepository extends CrudRepository<Application, Long> {
 
 
 }

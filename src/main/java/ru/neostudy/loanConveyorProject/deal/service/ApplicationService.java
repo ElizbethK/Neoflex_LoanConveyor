@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.neostudy.loanConveyorProject.conveyor.dto.LoanOfferDTO;
-import ru.neostudy.loanConveyorProject.conveyor.service.LoanOfferService;
 import ru.neostudy.loanConveyorProject.deal.entity.Application;
 import ru.neostudy.loanConveyorProject.deal.entity.Client;
 import ru.neostudy.loanConveyorProject.deal.entity.StatusHistoryJsonb;
@@ -14,6 +13,7 @@ import ru.neostudy.loanConveyorProject.deal.exception.ResourceNotFoundException;
 import ru.neostudy.loanConveyorProject.deal.repository.ApplicationRepository;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,9 +48,9 @@ public class ApplicationService {
     }
 
 
-    public void updateApplication(LoanOfferDTO loanOfferDTO) throws ResourceNotFoundException {
+    public Application updateApplication(LoanOfferDTO loanOfferDTO) throws ResourceNotFoundException {
         logger.info("Обновление Application из: {}", loanOfferDTO);
-        Integer id = loanOfferDTO.getApplicationId();
+        Long id = loanOfferDTO.getApplicationId();
 
         Optional <Application> optionalApplication = applicationRepository.findById(id);
         Application application = optionalApplication.get();
@@ -68,9 +68,11 @@ public class ApplicationService {
         applicationRepository.save(application);
         logger.info("Обновленный Application сохранен");
 
+        return application;
+
     }
 
-    public Optional<Application> findById(Integer id) throws ResourceNotFoundException{
+    public Optional<Application> findById(Long id) throws ResourceNotFoundException{
         Optional<Application> optionalApplication = applicationRepository.findById(id);
         Application application = optionalApplication.get();
         logger.info("Найден Application с id = {}: {}", id, application );
@@ -79,13 +81,21 @@ public class ApplicationService {
 
 
     public List<LoanOfferDTO> setIDForEachOffer(List<LoanOfferDTO> loanOfferDTOList, Application application){
-        for (LoanOfferDTO l:loanOfferDTOList
+        for (LoanOfferDTO loanOfferDTO:loanOfferDTOList
              ) {
-            l.setApplicationId(application.getApplicationId());
+            loanOfferDTO.setApplicationId(application.getApplicationId());
         }
         logger.info("Для каждого LoanOfferDTO установлен ApplicationId = {}", application.getApplicationId());
         return loanOfferDTOList;
     }
 
+    public List<Application> getAllApplications(){
+        List<Application> applicationList = new ArrayList<>();
+        Iterable<Application> applications = applicationRepository.findAll();
+        for (Application application : applications
+             ) {applicationList.add(application);
+        }
+        return applicationList;
+    }
 
 }

@@ -22,7 +22,7 @@ public class Employment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator="employment_id_seq")
     @Column(name = "employment_id", nullable = false)
-    private Integer employmentId;
+    private Long employmentId;
 
     //Enum
     @Enumerated(EnumType.STRING)

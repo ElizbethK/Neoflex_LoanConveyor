@@ -27,7 +27,7 @@ public class Application {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator="application_id_seq")
     @Column(name = "application_id", nullable = false)
-    private Integer applicationId;
+    private Long applicationId;
 
     //ForeignKey1
     @OneToOne(cascade = CascadeType.ALL)

@@ -34,7 +34,7 @@ class ApplicationServiceTest {
     @Test
     void createApplication() {
         Client client = new Client();
-        client.setClientId(112);
+        client.setClientId(112L);
         ApplicationStatus applicationStatus = PREAPPROVAL;
         StatusHistoryJsonb statusHistoryJsonb = new StatusHistoryJsonb(
                 ApplicationStatus.PREAPPROVAL, LocalDate.now(), ChangeType.AUTOMATIC );
@@ -54,7 +54,7 @@ class ApplicationServiceTest {
     @Test
     void updateApplication() throws ResourceNotFoundException {
         LoanOfferDTO loanOfferDTO = new LoanOfferDTO();
-        int id = 44;
+        Long id = Long.valueOf(44);
         loanOfferDTO.setApplicationId(id);
         Optional <Application> optionalApplication = Optional.of(new Application());
         when(applicationRepository.findById(id)).thenReturn(optionalApplication);
@@ -70,7 +70,7 @@ class ApplicationServiceTest {
 
     @Test
     void findById() throws ResourceNotFoundException {
-        Integer id = 12;
+        Long id = Long.valueOf(12);
         Application application = new Application();
         application.setApplicationId(id);
         applicationRepository.save(application);
@@ -90,7 +90,7 @@ class ApplicationServiceTest {
                         new LoanOfferDTO(),
                         new LoanOfferDTO()
                 );
-        int id = 14263;
+        Long id = Long.valueOf(14263);
         Application application = new Application();
         application.setApplicationId(id);
 

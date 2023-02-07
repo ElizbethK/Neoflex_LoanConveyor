@@ -25,7 +25,7 @@ public class Credit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator="credit_id_seq")
     @Column(name = "credit_id", nullable = false)
-    private Integer creditId;
+    private Long creditId;
 
     @Column(name = "amount")
     private BigDecimal amount;

@@ -33,9 +33,6 @@ public class ApplicationController {
         logger.info("DealController. Переход на ConveyorController. (метод getPossibleOffers)");
         return feignApplicationClient.getPossibleOffers(loanApplicationRequestDTO);
 
-
-
-
     }
 
 

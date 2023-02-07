@@ -124,9 +124,6 @@ class ClientServiceTest {
         );
 
 
-
-
-
         Client client1 = clientList.get(0);
         Client client2 = clientList.get(1);
 

@@ -24,7 +24,7 @@ public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator="client_id_seq")
     @Column(name = "client_id", nullable = false)
-    private Integer  clientId;
+    private Long  clientId;
 
     @Column(name = "last_name")
     private String lastName;
