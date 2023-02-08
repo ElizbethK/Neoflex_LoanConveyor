@@ -19,12 +19,18 @@ import ru.neostudy.loanConveyorProject.deal.dto.EmailMessage;
 import ru.neostudy.loanConveyorProject.deal.dto.Theme;
 import ru.neostudy.loanConveyorProject.deal.entity.Application;
 import ru.neostudy.loanConveyorProject.deal.entity.Client;
+import ru.neostudy.loanConveyorProject.deal.entity.StatusHistoryJsonb;
+import ru.neostudy.loanConveyorProject.deal.enums.ApplicationStatus;
+import ru.neostudy.loanConveyorProject.deal.enums.ChangeType;
 import ru.neostudy.loanConveyorProject.deal.exception.ResourceNotFoundException;
 import ru.neostudy.loanConveyorProject.deal.service.ApplicationService;
 import ru.neostudy.loanConveyorProject.deal.service.ClientService;
 import ru.neostudy.loanConveyorProject.deal.service.ScoringDataDTOService;
 
 import javax.validation.Valid;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -97,7 +103,7 @@ public class DealController {
                 updatedApplication.getApplicationId(), "Hello! Your loan application №"
                 + loanOfferDTO.getApplicationId()
                 + " successfully approved! Please, finish your registration by the link: " +
-                "http://localhost:8080/deal/calculate/{applicationId}"
+                "http://localhost:8081/deal/calculate/{applicationId}"
         );
         feignDealClient.sendEmail(emailMessage);
     }
@@ -116,6 +122,9 @@ public class DealController {
         Optional <Application> optionalApplication = Optional.ofNullable(applicationService.findById(id).orElseThrow(() ->
                 new ResourceNotFoundException("Application with id " + id + " is not found")));
         Application application = optionalApplication.get();
+        application.setApplicationStatus(ApplicationStatus.CC_APPROVED);
+        application.addToStatusHistoryList(new StatusHistoryJsonb(ApplicationStatus.CC_APPROVED,
+                LocalDate.now(), ChangeType.AUTOMATIC));
 
         logger.info("DealController. Вызов метода consolidateScoringInformation");
         ScoringDataDTO scoringDataDTO = scoringDataDTOService.consolidateScoringInformation(application,finishRegistrationRequestDTO);
@@ -123,8 +132,21 @@ public class DealController {
         feignDealClient.getCalculatedCredit(scoringDataDTO);
         logger.info("DealController. Переход на ConveyorController. (метод getCalculatedCredit)");
 
-        requestDocuments(id);
-        logger.info("Kafka сообщение об оформлении документов отправлено");
+        NewTopic createDocumentsTopic = topicsConfig.doCreateDocumentsTopic();
+        kafkaProducer.sendMessageToTopic(createDocumentsTopic, "Go to creating documents");
+        logger.info("Kafka запрос на оформление документов отправлен");
+
+        EmailMessage emailMessage = new EmailMessage(
+                application.getClient().getEmail(), Theme.CREATE_DOCUMENTS,
+                application.getApplicationId(), "Hello! Your loan application №"
+                + application.getApplicationId()
+                + " passed all checks! Please, send creating documents request by the link: " +
+                "http://localhost:8081/deal/document/{applicationId}/send"
+        );
+        feignDealClient.sendEmail(emailMessage);
+        application.setApplicationStatus(ApplicationStatus.PREPARE_DOCUMENTS);
+        application.addToStatusHistoryList(new StatusHistoryJsonb(ApplicationStatus.PREPARE_DOCUMENTS,
+                LocalDate.now(), ChangeType.AUTOMATIC));
     }
 
 
@@ -133,36 +155,96 @@ public class DealController {
     //POST: /deal/document/{applicationId}/send - запрос на отправку документов
     @PostMapping("/document/{applicationId}/send")
     public void requestDocuments(@PathVariable (value = "applicationId")Long applicationId) throws ResourceNotFoundException {
-       NewTopic createDocumentsTopic = topicsConfig.doCreateDocumentsTopic();
-       kafkaProducer.sendMessageToTopic(createDocumentsTopic, "Go to creating documents");
+       NewTopic sendDocumentsTopic = topicsConfig.doSendDocumentsTopic();
+       kafkaProducer.sendMessageToTopic(sendDocumentsTopic, "Go to signing documents");
 
        Application application = getApplicationById(applicationId);
 
-       EmailMessage emailMessage = new EmailMessage(
-                application.getClient().getEmail(), Theme.CREATE_DOCUMENTS,
-                application.getApplicationId(), "Hello! Your loan application №"
-                + application.getApplicationId()
-                + " passed all checks! Please, send creating documents request by the link: " +
-                "http://localhost:8080/deal/calculate/{applicationId}"
+  // Email message must be with attachment, created in "createAllDocuments" method
+        createAllDocuments(application);
+
+        application.setApplicationStatus(ApplicationStatus.DOCUMENT_CREATED);
+        application.addToStatusHistoryList(new StatusHistoryJsonb(ApplicationStatus.DOCUMENT_CREATED,
+                LocalDate.now(), ChangeType.AUTOMATIC));
+
+        EmailMessage emailMessageWithAttachment = new EmailMessage(
+                application.getClient().getEmail(), Theme.SEND_DOCUMENTS,
+                application.getApplicationId(), "Hello! This is full information about you and your loan application."
+                + " Please, check it and, if it`s right, send signing request by the link: " +
+                "http://localhost:8081/deal/document/{applicationId}/sign"
         );
-        feignDealClient.sendEmail(emailMessage);
+        feignDealClient.sendEmail(emailMessageWithAttachment);
+    }
 
 
-
-
+//added by myself for creating documents for the client
+    public void createAllDocuments(Application application) throws ResourceNotFoundException {
+      // .........
     }
 
 
     //POST: /deal/document/{applicationId}/sign - запрос на подписание документов
     @PostMapping("/document/{applicationId}/sign")
-    public void requestSign(){
+    public void requestSign(@PathVariable (value = "applicationId")Long applicationId) throws ResourceNotFoundException {
+        NewTopic SendSESTopic = topicsConfig.doSendSESTopic();
+        kafkaProducer.sendMessageToTopic(SendSESTopic, "Send ses-code");
 
+        Long sesCode = createSesCode();
+        Application application = getApplicationById(applicationId);
+        application.setSesCode(sesCode);
+
+        EmailMessage emailMessageWithAttachment = new EmailMessage(
+                application.getClient().getEmail(), Theme.SEND_SES,
+                application.getApplicationId(), "Hello! There is your personal SES-code: " + sesCode +
+                " Please, do not show it anybody and send by the link: " +
+                "http://localhost:8081/deal/document/{applicationId}/code"
+        );
+        feignDealClient.sendEmail(emailMessageWithAttachment);
+        application.setApplicationStatus(ApplicationStatus.DOCUMENT_SIGNED);
+        application.addToStatusHistoryList(new StatusHistoryJsonb(ApplicationStatus.DOCUMENT_SIGNED,
+                LocalDate.now(), ChangeType.AUTOMATIC));
     }
+
+    public long createSesCode(){
+        return Long.valueOf((int)(1 + Math.random() * 999));
+    }
+
 
 
     //POST: /deal/document/{applicationId}/code - подписание документов
     @PostMapping("/document/{applicationId}/code")
-    public void requestSesCode(){
+    public void requestSesCode(@PathVariable (value = "applicationId")Long applicationId, Long sesCode) throws ResourceNotFoundException {
+        Application application = getApplicationById(applicationId);
+
+        if(application.getSesCode() == sesCode){
+            NewTopic creditIssuedTopic = topicsConfig.doCreditIssuedTopic();
+            kafkaProducer.sendMessageToTopic(creditIssuedTopic, "Credit issued");
+
+            EmailMessage emailMessageWithAttachment = new EmailMessage(
+                    application.getClient().getEmail(), Theme.CREDIT_ISSUED,
+                    application.getApplicationId(), "Hello! Your credit issued! Congratulations!"
+            );
+            feignDealClient.sendEmail(emailMessageWithAttachment);
+
+            application.setApplicationStatus(ApplicationStatus.CREDIT_ISSUED);
+            application.addToStatusHistoryList(new StatusHistoryJsonb(ApplicationStatus.CREDIT_ISSUED,
+                    LocalDate.now(), ChangeType.AUTOMATIC));
+        } else {
+            NewTopic applicationDeniedTopic = topicsConfig.doApplicationDeniedTopic();
+            kafkaProducer.sendMessageToTopic(applicationDeniedTopic, "Application was denied");
+
+            EmailMessage emailMessage = new EmailMessage(
+                    application.getClient().getEmail(), Theme.APPLICATION_DENIED,
+                    application.getApplicationId(), "Hello! Your Application was denied! Try " +
+                    "to input the correct ses-code by the link again: http://localhost:8081/deal/document/{applicationId}/code "
+            );
+            feignDealClient.sendEmail(emailMessage);
+
+            application.setApplicationStatus(ApplicationStatus.CLIENT_DENIED);
+            application.addToStatusHistoryList(new StatusHistoryJsonb(ApplicationStatus.CLIENT_DENIED,
+                    LocalDate.now(), ChangeType.AUTOMATIC));
+
+        }
     }
 
 
@@ -187,9 +269,5 @@ public class DealController {
         List<Application> applicationList = applicationService.getAllApplications();
         return applicationList;
     }
-
-
-
-
 
 }
