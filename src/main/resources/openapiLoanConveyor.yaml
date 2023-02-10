@@ -1,0 +1,683 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8081/
+    description: Generated server url
+paths:
+  /deal/offer:
+    put:
+      tags:
+        - deal-controller
+      operationId: chooseOffer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanOfferDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /deal/calculate/{applicationId}:
+    put:
+      tags:
+        - deal-controller
+      operationId: finishRegistration
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinishRegistrationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /application/offer:
+    put:
+      tags:
+        - application-controller
+      operationId: takeOffer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanOfferDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+  /dossier/send:
+    post:
+      tags:
+        - dossier-controller
+      operationId: sendEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailMessage'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /dossier/send/attachment:
+    post:
+      tags:
+        - dossier-controller
+      operationId: sendEmailWithAttachment
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmailMessage'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: string
+  /deal/document/{applicationId}/sign:
+    post:
+      tags:
+        - deal-controller
+      operationId: requestSign
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+  /deal/document/{applicationId}/send:
+    post:
+      tags:
+        - deal-controller
+      operationId: requestDocuments
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+  /deal/document/{applicationId}/code:
+    post:
+      tags:
+        - deal-controller
+      operationId: requestSesCode
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: sesCode
+          in: query
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+  /deal/application:
+    post:
+      tags:
+        - deal-controller
+      operationId: createClientAndApp
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanApplicationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanOfferDTO'
+  /conveyor/offers:
+    post:
+      tags:
+        - conveyor-controller
+      operationId: getPossibleOffers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanApplicationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanOfferDTO'
+  /conveyor/calculation:
+    post:
+      tags:
+        - conveyor-controller
+      operationId: getCalculatedCredit
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScoringDataDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/CreditDTO'
+  /application:
+    post:
+      tags:
+        - application-controller
+      operationId: createFourOffers
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoanApplicationRequestDTO'
+        required: true
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LoanOfferDTO'
+  /deal/admin/application:
+    get:
+      tags:
+        - deal-controller
+      operationId: getListOfApplications
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Application'
+  /deal/admin/application/{applicationId}:
+    get:
+      tags:
+        - deal-controller
+      operationId: getApplicationById
+      parameters:
+        - name: applicationId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: OK
+          content:
+            '*/*':
+              schema:
+                $ref: '#/components/schemas/Application'
+components:
+  schemas:
+    LoanOfferDTO:
+      type: object
+      properties:
+        applicationId:
+          type: integer
+          format: int64
+        requestedAmount:
+          type: number
+        totalAmount:
+          type: number
+        term:
+          type: integer
+          format: int32
+        monthlyPayment:
+          type: number
+        rate:
+          type: number
+        isInsuranceEnabled:
+          type: boolean
+        isSalaryClient:
+          type: boolean
+    EmploymentDTO:
+      required:
+        - employerINN
+        - salary
+        - workExperienceCurrent
+        - workExperienceTotal
+      type: object
+      properties:
+        employmentStatus:
+          type: string
+          enum:
+            - UNEMPLOYED
+            - EMPLOYED
+            - SELFEMPLOYED
+            - BUSINESSOWNER
+        employerINN:
+          type: string
+        salary:
+          type: number
+        position:
+          type: string
+          enum:
+            - WORKER
+            - MID_MANAGER
+            - TOPMANAGER
+            - OWNER
+        workExperienceTotal:
+          type: integer
+          format: int32
+        workExperienceCurrent:
+          type: integer
+          format: int32
+    FinishRegistrationRequestDTO:
+      type: object
+      properties:
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - NOTBINARY
+        maritalStatus:
+          type: string
+          enum:
+            - SINGLE
+            - MARRIED
+            - DIVORCED
+            - WIDOW_WIDOWER
+        dependentAmount:
+          type: number
+        passportIssueDate:
+          type: string
+          format: date
+        passportIssueBranch:
+          type: string
+        employment:
+          $ref: '#/components/schemas/EmploymentDTO'
+        account:
+          type: string
+    EmailMessage:
+      type: object
+      properties:
+        address:
+          type: string
+        theme:
+          type: string
+          enum:
+            - FINISH_REGISTRATION
+            - CREATE_DOCUMENTS
+            - SEND_DOCUMENTS
+            - SEND_SES
+            - CREDIT_ISSUED
+            - APPLICATION_DENIED
+        applicationId:
+          type: integer
+          format: int64
+        message:
+          type: string
+        attachment:
+          type: object
+    LoanApplicationRequestDTO:
+      required:
+        - amount
+        - birthdate
+        - email
+        - firstName
+        - lastName
+        - term
+      type: object
+      properties:
+        amount:
+          minimum: 10000
+          type: number
+        term:
+          minimum: 6
+          type: integer
+          format: int32
+        lastName:
+          pattern: '[a-zA-Z]{2,30}'
+          type: string
+        firstName:
+          pattern: '[a-zA-Z]{2,30}'
+          type: string
+        middleName:
+          pattern: '[a-zA-Z]{0,30}'
+          type: string
+        email:
+          pattern: '[\w.]{2,50}@[\w.]{2,20}'
+          type: string
+        birthdate:
+          type: string
+          format: date
+        passportSeries:
+          pattern: \d{4}
+          type: string
+        passportNumber:
+          pattern: \d{6}
+          type: string
+    ScoringDataDTO:
+      required:
+        - account
+        - amount
+        - birthdate
+        - dependentAmount
+        - firstName
+        - isInsuranceEnabled
+        - isSalaryClient
+        - lastName
+        - passportIssueBranch
+        - passportIssueDate
+        - term
+      type: object
+      properties:
+        amount:
+          type: number
+        term:
+          type: integer
+          format: int32
+        firstName:
+          type: string
+        lastName:
+          type: string
+        middleName:
+          type: string
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - NOTBINARY
+        birthdate:
+          type: string
+          format: date
+        passportSeries:
+          pattern: \d{4}
+          type: string
+        passportNumber:
+          pattern: \d{4}
+          type: string
+        passportIssueDate:
+          type: string
+          format: date
+        passportIssueBranch:
+          type: string
+        maritalStatus:
+          type: string
+          enum:
+            - SINGLE
+            - MARRIED
+            - DIVORCED
+            - WIDOW_WIDOWER
+        dependentAmount:
+          type: integer
+          format: int32
+        employment:
+          $ref: '#/components/schemas/EmploymentDTO'
+        account:
+          type: string
+        isInsuranceEnabled:
+          type: boolean
+        isSalaryClient:
+          type: boolean
+    CreditDTO:
+      type: object
+      properties:
+        amount:
+          type: number
+        term:
+          type: integer
+          format: int32
+        monthlyPayment:
+          type: number
+        rate:
+          type: number
+        psk:
+          type: number
+        isInsuranceEnabled:
+          type: boolean
+        isSalaryClient:
+          type: boolean
+        paymentSchedule:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentScheduleElement'
+        creditDecision:
+          type: string
+    PaymentScheduleElement:
+      type: object
+      properties:
+        number:
+          type: integer
+          format: int32
+        date:
+          type: string
+          format: date
+        totalPayment:
+          type: number
+        interestPayment:
+          type: number
+        debtPayment:
+          type: number
+        remainingDebt:
+          type: number
+    Application:
+      type: object
+      properties:
+        applicationId:
+          type: integer
+          format: int64
+        client:
+          $ref: '#/components/schemas/Client'
+        credit:
+          $ref: '#/components/schemas/Credit'
+        applicationStatus:
+          type: string
+          enum:
+            - PREAPPROVAL
+            - APPROVED
+            - CC_DENIED
+            - CC_APPROVED
+            - PREPARE_DOCUMENTS
+            - DOCUMENT_CREATED
+            - CLIENT_DENIED
+            - DOCUMENT_SIGNED
+            - CREDIT_ISSUED
+        creationDate:
+          type: string
+          format: date
+        appliedOffer:
+          $ref: '#/components/schemas/LoanOfferDTO'
+        signDate:
+          type: string
+          format: date
+        sesCode:
+          type: integer
+          format: int64
+        statusHistoryList:
+          type: array
+          items:
+            $ref: '#/components/schemas/StatusHistoryJsonb'
+    Client:
+      type: object
+      properties:
+        clientId:
+          type: integer
+          format: int64
+        lastName:
+          type: string
+        firstName:
+          type: string
+        middleName:
+          type: string
+        birthDate:
+          type: string
+          format: date
+        email:
+          type: string
+        gender:
+          type: string
+          enum:
+            - MALE
+            - FEMALE
+            - NOTBINARY
+        maritalStatus:
+          type: string
+          enum:
+            - SINGLE
+            - MARRIED
+            - DIVORCED
+            - WIDOW_WIDOWER
+        dependentAmount:
+          type: integer
+          format: int32
+        passport:
+          $ref: '#/components/schemas/Passport'
+        employment:
+          $ref: '#/components/schemas/Employment'
+        account:
+          type: string
+        application:
+          $ref: '#/components/schemas/Application'
+    Credit:
+      type: object
+      properties:
+        creditId:
+          type: integer
+          format: int64
+        amount:
+          type: number
+        term:
+          type: integer
+          format: int32
+        monthlyPayment:
+          type: number
+        rate:
+          type: number
+        psk:
+          type: number
+        paymentSchedule:
+          type: array
+          items:
+            $ref: '#/components/schemas/PaymentScheduleElement'
+        insuranceEnable:
+          type: boolean
+        salaryClient:
+          type: boolean
+        creditStatus:
+          type: string
+          enum:
+            - CALCULATED
+            - ISSUED
+        application:
+          $ref: '#/components/schemas/Application'
+    Employment:
+      type: object
+      properties:
+        employmentId:
+          type: integer
+          format: int64
+        employmentStatus:
+          type: string
+          enum:
+            - UNEMPLOYED
+            - EMPLOYED
+            - SELFEMPLOYED
+            - BUSINESSOWNER
+        employerINN:
+          type: string
+        salary:
+          type: number
+        position:
+          type: string
+          enum:
+            - WORKER
+            - MID_MANAGER
+            - TOPMANAGER
+            - OWNER
+        workExperienceTotal:
+          type: integer
+          format: int32
+        workExperienceCurrent:
+          type: integer
+          format: int32
+        client:
+          $ref: '#/components/schemas/Client'
+    Passport:
+      type: object
+      properties:
+        passportId:
+          type: integer
+          format: int64
+        series:
+          type: string
+        number:
+          type: string
+        issueBranch:
+          type: string
+        issueDate:
+          type: string
+          format: date
+        client:
+          $ref: '#/components/schemas/Client'
+    StatusHistoryJsonb:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - PREAPPROVAL
+            - APPROVED
+            - CC_DENIED
+            - CC_APPROVED
+            - PREPARE_DOCUMENTS
+            - DOCUMENT_CREATED
+            - CLIENT_DENIED
+            - DOCUMENT_SIGNED
+            - CREDIT_ISSUED
+        time:
+          type: string
+          format: date
+        changeType:
+          type: string
+          enum:
+            - AUTOMATIC
+            - MANUAL

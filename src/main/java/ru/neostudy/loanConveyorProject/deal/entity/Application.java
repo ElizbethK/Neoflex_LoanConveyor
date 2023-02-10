@@ -22,6 +22,7 @@ import java.util.List;
 @Entity
 @Table(name = "application")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+@SequenceGenerator(name = "application_id", sequenceName = "application_id_seq", allocationSize = 1)
 public class Application {
 
     @Id

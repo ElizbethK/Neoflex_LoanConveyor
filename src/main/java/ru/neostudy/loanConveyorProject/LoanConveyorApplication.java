@@ -8,7 +8,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
 @EnableFeignClients
-//@EnableSwagger2
 public class LoanConveyorApplication {
 
 	public static void main(String[] args) {
