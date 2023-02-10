@@ -28,4 +28,6 @@ public class EmailMessage {
         this.message = message;
         this.attachment = attachment;
     }
+
+
 }

@@ -20,6 +20,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "client")
 @TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
+@SequenceGenerator(name = "client_id", sequenceName = "client_id_seq", allocationSize = 1)
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY, generator="client_id_seq")

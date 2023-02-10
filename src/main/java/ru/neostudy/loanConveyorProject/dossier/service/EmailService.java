@@ -36,7 +36,8 @@ public class EmailService implements EmailSenderService{
     }
 
     @Override
-    public void sendEmailWithAttachment(String address, Theme theme, Long applicationId, String attachment) throws MessagingException {
+    public void sendEmailWithAttachment(String address, Theme theme, Long applicationId,
+                                        String ...attachments ) throws MessagingException {
 
         MimeMessage mimeMessage = mailSender.createMimeMessage();
 
@@ -46,15 +47,15 @@ public class EmailService implements EmailSenderService{
         mimeMessageHelper.setFrom("loanconveyor@gmail.com");
         mimeMessageHelper.setTo(address);
         mimeMessageHelper.setText(String.valueOf(applicationId));
-        mimeMessageHelper.setText(attachment);
         mimeMessageHelper.setSubject(String.valueOf(theme));
 
-        FileSystemResource fileSystem
-                = new FileSystemResource(new File(attachment));
-
-        mimeMessageHelper.addAttachment(fileSystem.getFilename(),
-                fileSystem);
-
+        for (String attachment : attachments
+             ) { mimeMessageHelper.setText(attachment);
+            FileSystemResource fileSystem
+                    = new FileSystemResource(new File(attachment));
+            mimeMessageHelper.addAttachment(fileSystem.getFilename(),
+                    fileSystem);
+        }
         mailSender.send(mimeMessage);
         System.out.println("Mail Send.");
 

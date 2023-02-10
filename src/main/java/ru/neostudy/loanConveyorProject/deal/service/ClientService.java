@@ -7,6 +7,8 @@ import ru.neostudy.loanConveyorProject.conveyor.dto.LoanApplicationRequestDTO;
 import ru.neostudy.loanConveyorProject.deal.entity.Client;
 import ru.neostudy.loanConveyorProject.deal.repository.ClientRepository;
 
+import java.util.Optional;
+
 @Service
 public class ClientService {
     private static final Logger logger = LoggerFactory.getLogger(ApplicationService.class);
@@ -30,4 +32,10 @@ public class ClientService {
         logger.info("Client сохранен. {}", client);
         return client;
     }
+
+    public Client getClientById(Long id){
+        Optional<Client> clientOptional = clientRepository.findById(id);
+        return clientOptional.get();
+    }
+
 }
